@@ -15,4 +15,6 @@ public class UserServiceImpl implements UserService {
         user.encodePassword();
         userRepository.insert(user);
     }
+
+    // 리스트를 Users로받기
 }

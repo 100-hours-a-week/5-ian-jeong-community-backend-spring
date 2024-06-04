@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-import java.sql.SQLException;
+import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
@@ -13,7 +13,7 @@ public class UserRepositoryImpl implements UserRepository {
     private final JdbcTemplate jdbcTemplate;
 
     @Override
-    public void save(User user) {
+    public void insert(User user) {
         String sql = "INSERT INTO users (email, password, nickname, image) VALUES (?, ?, ?, ?)";
         jdbcTemplate.update(
                 sql, user.getEmail(),
@@ -21,5 +21,10 @@ public class UserRepositoryImpl implements UserRepository {
                 user.getNickname(),
                 user.getImage()
         );
+    }
+
+    @Override
+    public Optional<User> select() {
+
     }
 }

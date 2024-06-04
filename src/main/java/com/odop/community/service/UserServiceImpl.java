@@ -13,6 +13,6 @@ public class UserServiceImpl implements UserService {
     @Override
     public void save(User user) {
         user.encodePassword();
-        userRepository.save(user);
+        userRepository.insert(user);
     }
 }

@@ -12,9 +12,10 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
 
     @Override
-    public void save(User user) {
+    public void join(User user) {
         // 이미지 따로처리하고 경로룰저장해야함
-        // id Long 타입으로 변경?
+        // id Long 타입으로 변경? 디비도 변경
+        // 도메인 엔티티객체 어노테이션 추가
         user.encodePassword();
         userRepository.insert(user);
     }
@@ -31,5 +32,27 @@ public class UserServiceImpl implements UserService {
         Users users = new Users(userRepository.selectAll());
 
         return users.validateDuplicatedNickname(nickname);
+    }
+
+    @Override
+    public boolean validateAccount(String email, String password) {
+        Users users = new Users(userRepository.selectAll());
+
+        return users.validateAccount(email, password);
+    }
+
+    @Override
+    public User findById(int id) {
+        return userRepository.selectById(id); // 옵셔널 처리?
+    }
+
+    @Override
+    public void update(User user) {
+        userRepository.update(user);
+    }
+
+    @Override
+    public void withdraw(int id) {
+        userRepository.delete(id);
     }
 }

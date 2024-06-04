@@ -7,6 +7,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @Getter
 @RequiredArgsConstructor
 public class User {
+    private String id;
     private String email;
     private String password;
     private String nickname;

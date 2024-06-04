@@ -12,8 +12,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void save(User user) {
-        // user객체 암호화
-
-        userRepository.create(user);
+        user.encodePassword();
+        userRepository.save(user);
     }
 }

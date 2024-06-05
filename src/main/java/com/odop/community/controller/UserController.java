@@ -5,4 +5,5 @@ import org.springframework.http.ResponseEntity;
 
 public interface UserController {
     ResponseEntity<Void> join(User user);
+    ResponseEntity<> validateEmail();
 }

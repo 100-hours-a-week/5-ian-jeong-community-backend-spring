@@ -54,4 +54,7 @@ public class UserRepositoryImpl implements UserRepository {
         String sql = "UPDATE users SET deleted_at = CURRENT_TIMESTAMP() WHERE id = ?";
         jdbcTemplate.update(sql, id);
     }
+
 }
+
+

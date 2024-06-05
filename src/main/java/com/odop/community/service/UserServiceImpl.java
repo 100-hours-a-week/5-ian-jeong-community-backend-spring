@@ -37,7 +37,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean validateAccount(String email, String password) {
         Users users = new Users(userRepository.selectAll());
-
+        // 검증 통과여부에 따라 jwt 증 발급해야함
         return users.validateAccount(email, password);
     }
 

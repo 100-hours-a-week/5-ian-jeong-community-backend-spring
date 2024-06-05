@@ -11,16 +11,16 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
-@RestController("/users")
+@RestController
 @RequiredArgsConstructor
 public class UserControllerImpl implements UserController {
     private final UserService userService;
 
     @Override
     @PostMapping("/")
-    public ResponseEntity<Void> save(@RequestBody User user) {
+    public ResponseEntity<Void> join(@RequestBody User user) {
         try {
-            userService.save(user);
+            userService.join(user);
             return new ResponseEntity<>(HttpStatus.CREATED);
 
         } catch (Exception e) {

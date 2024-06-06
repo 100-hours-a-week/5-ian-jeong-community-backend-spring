@@ -8,7 +8,7 @@ import java.util.List;
 public interface UserRepository {
     void insert(User user);
     List<User> selectAll();
-    User selectById(int id);
+    User selectById(long id);
     void update(User user);
-    public void delete(int id);
+    public void delete(long id);
 }

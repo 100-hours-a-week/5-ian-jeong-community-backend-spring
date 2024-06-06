@@ -7,7 +7,7 @@ public interface UserService {
     boolean validateDuplicatedEmail(String email);
     boolean validateDuplicatedNickname(String nickname);
     boolean validateAccount(String email, String password);
-    User findById(int id);
+    User findById(long id);
     void update(User user);
-    void withdraw(int id);
+    void withdraw(long id);
 }

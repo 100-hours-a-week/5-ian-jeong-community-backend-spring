@@ -32,7 +32,7 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public User selectById(int id) {
+    public User selectById(long id) {
         String sql = "SELECT id, email, password, nickname, convert(image USING UTF8) as image FROM users WHERE id = ? AND deleted_at IS NULL";
         return jdbcTemplate.queryForObject(sql, BeanPropertyRowMapper.newInstance(User.class), id);
     }
@@ -50,7 +50,7 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public void delete(int id) {
+    public void delete(long id) {
         String sql = "UPDATE users SET deleted_at = CURRENT_TIMESTAMP() WHERE id = ?";
         jdbcTemplate.update(sql, id);
     }

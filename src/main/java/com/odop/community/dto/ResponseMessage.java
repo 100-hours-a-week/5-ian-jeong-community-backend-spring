@@ -6,5 +6,5 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public class ResponseMessage<T> {
-    private T result;
+    private final T result;
 }

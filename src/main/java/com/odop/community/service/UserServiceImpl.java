@@ -42,7 +42,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User findById(int id) {
+    public User findById(long id) {
         return userRepository.selectById(id); // 옵셔널 처리?
     }
 
@@ -52,7 +52,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void withdraw(int id) {
+    public void withdraw(long id) {
         userRepository.delete(id);
     }
 }

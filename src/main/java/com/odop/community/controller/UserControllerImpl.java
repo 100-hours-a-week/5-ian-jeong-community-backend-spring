@@ -56,11 +56,6 @@ public class UserControllerImpl implements UserController {
     @PostMapping
     public ResponseEntity<Void> join(@RequestBody UserDTO userDTO) {
         try {
-            System.out.println(userDTO.getEmail());
-            System.out.println(userDTO.getPassword());
-            System.out.println(userDTO.getNickname());
-            System.out.println(userDTO.getImage());
-
             userService.join(userDTO);
             return new ResponseEntity<>(HttpStatus.CREATED);
 

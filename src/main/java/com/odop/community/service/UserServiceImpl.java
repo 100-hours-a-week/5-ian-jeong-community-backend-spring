@@ -10,11 +10,21 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.FileCopyUtils;
+
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.UUID;
 
 @Service
 @Transactional
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
+    private static final String USER_IMAGE_DIRECTORY = "src/main/resources/images/user/";
+
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
@@ -44,10 +54,20 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void join(UserDTO userDTO) {
-        // 이미지 따로처리하고 경로 저장해야함
-        // 비번 암호화
-        // 변경된 데이터들을 기반으로 엔티티 생성해서 insert
-        // 예외처리
+        if (!userDTO.getImage().equals("")) {
+            String imageName = UUID.randomUUID().toString();
+            Path imagePath = Paths.get(USER_IMAGE_DIRECTORY + imageName);
+
+            try (OutputStream outputStream = new FileOutputStream(imagePath.toFile())) {
+                FileCopyUtils.copy(userDTO.getImage().getBytes(), outputStream);
+                userDTO.setImage(imageName);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        userDTO.setPassword(passwordEncoder.encode(userDTO.getPassword()));
+        userRepository.insert(userDTO);
     }
 
     @Override

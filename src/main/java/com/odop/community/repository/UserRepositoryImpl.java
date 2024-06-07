@@ -19,7 +19,8 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public void insert(UserDTO userDTO) {
-        String sql = "INSERT INTO users (email, password, nickname, image) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO users (email, password, nickname, image) " +
+                "VALUES (?, ?, ?, ?)";
         jdbcTemplate.update(
                 sql,
                 userDTO.getEmail(),

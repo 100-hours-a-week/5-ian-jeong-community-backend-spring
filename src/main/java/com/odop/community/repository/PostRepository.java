@@ -1,16 +1,15 @@
 package com.odop.community.repository;
 
-import com.odop.community.dto.Comment;
-import com.odop.community.dto.Post;
-import com.odop.community.dto.User;
+import com.odop.community.domain.entity.Comment;
+import com.odop.community.domain.entity.Post;
 
 import java.util.List;
 
 public interface PostRepository {
     void insert(Post post);
     List<Post> selectAll();
-    User selectById(long postId);
-    void update(Post post);
+    Post selectById(long postId);
+    void update(Post Post);
     void delete(long postId);
 
     void voidInsertComment(Comment comment);

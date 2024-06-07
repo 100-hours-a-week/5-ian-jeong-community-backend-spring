@@ -41,5 +41,5 @@ Order 라는 도메인이 있을 때 OrderService 로 만드는 것은 피한다
 - [ ] jwt 적용 
 - [ ] 유저 관련 기능은 JDBCTemplate
 - [ ] 게시판 기능은 JPA + QueryDSL
-- [ ] 모든 기능 구현 후 post man 으로 API 테스트
+- [ ] 모든 기능 구현 후 postDTO man 으로 API 테스트
 - [ ] 스프링 전용 프론트 레포 복제해서 리팩토링 ㄱㄱ (리액트도?)

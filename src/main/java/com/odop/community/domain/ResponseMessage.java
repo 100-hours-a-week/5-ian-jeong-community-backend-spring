@@ -1,4 +1,4 @@
-package com.odop.community.dto;
+package com.odop.community.domain;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

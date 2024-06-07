@@ -1,4 +1,4 @@
-package com.odop.community.dto;
+package com.odop.community.domain.dto;
 
 import lombok.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -6,8 +6,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @Getter
 @Setter
 @AllArgsConstructor
-public class User {
-    private long id;
+public class UserDTO {
+    private Long id;
     private String email;
     private String password;
     private String nickname;

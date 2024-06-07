@@ -1,4 +1,4 @@
-package com.odop.community;
+package com.odop.community.config;
 
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
@@ -13,8 +13,7 @@ import javax.sql.DataSource;
 public class AppConfig {
     @Bean
     public JdbcTemplate jdbcTemplate(DataSource dataSource) {
-        return new JdbcTemplate(dataSource
-        );
+        return new JdbcTemplate(dataSource);
     }
 
     @Bean
@@ -31,4 +30,6 @@ public class AppConfig {
                 .password("1234")
                 .build();
     }
+
+
 }

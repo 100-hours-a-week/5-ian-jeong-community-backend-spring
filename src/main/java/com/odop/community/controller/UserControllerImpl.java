@@ -1,40 +1,36 @@
 package com.odop.community.controller;
 
-import com.odop.community.dto.ResponseMessage;
-import com.odop.community.dto.User;
+import com.odop.community.domain.ResponseMessage;
+import com.odop.community.domain.dto.UserDTO;
 import com.odop.community.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
+@RequestMapping("/users")
 @RequiredArgsConstructor
 public class UserControllerImpl implements UserController {
     private final UserService userService;
 
     @Override
-    @PostMapping("/")
-    public ResponseEntity<Void> join(@RequestBody User user) {
-        try {
-            userService.join(user);
-            return new ResponseEntity<>(HttpStatus.CREATED);
-
-        } catch (Exception e) {
-            log.error("user save Error = {} ", e);
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    @Override
     @GetMapping("/email")
     public ResponseEntity<ResponseMessage<Boolean>> validateEmail(@RequestParam String email) {
-        boolean result = userService.validateDuplicatedEmail(email);
-        ResponseMessage<Boolean> responseMessage = new ResponseMessage<>(result);
+        try {
+            boolean result = userService.validateDuplicatedEmail(email);
+            ResponseMessage<Boolean> responseMessage = new ResponseMessage<>(result);
 
-        return new ResponseEntity<>(responseMessage,HttpStatus.OK);
+            return new ResponseEntity<>(responseMessage,HttpStatus.OK);
+        } catch (DataAccessResourceFailureException e) {
+            log.error("Error validating email = {}", e.getMessage());
+            e.printStackTrace();
+
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @Override
@@ -46,6 +42,23 @@ public class UserControllerImpl implements UserController {
         return new ResponseEntity<>(responseMessage, HttpStatus.OK);
     }
 
+
+
+    @Override
+    @PostMapping("/")
+    public ResponseEntity<Void> join(@RequestBody UserDTO userDTO) {
+        try {
+            userService.join(userDTO);
+            return new ResponseEntity<>(HttpStatus.CREATED);
+
+        } catch (Exception e) {
+
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
+
     @Override
     public ResponseEntity<ResponseMessage<Boolean>> validateAccount(@RequestParam String email, String nickname) {
         boolean result = userService.validateAccount(email, nickname);
@@ -55,16 +68,16 @@ public class UserControllerImpl implements UserController {
     }
 
     @Override
-    public ResponseEntity<ResponseMessage<User>> findById(@PathVariable long id) {
-        User user = userService.findById(id);
-        ResponseMessage<User> responseMessage = new ResponseMessage<>(user);
+    public ResponseEntity<ResponseMessage<UserDTO>> findById(@PathVariable long id) {
+        UserDTO userDTO = userService.findById(id);
+        ResponseMessage<UserDTO> responseMessage = new ResponseMessage<>(userDTO);
 
         return new ResponseEntity<>(responseMessage, HttpStatus.OK);
     }
 
     @Override
-    public ResponseEntity<Void> update(@RequestBody User user) {
-        userService.update(user); // 이후에 에러처리 필요
+    public ResponseEntity<Void> update(@RequestBody UserDTO userDTO) {
+        userService.update(userDTO); // 이후에 에러처리 필요
 
         return new ResponseEntity<>(HttpStatus.CREATED);
     }

@@ -1,30 +1,37 @@
 package com.odop.community.controller;
 
-import com.odop.community.dto.Comment;
-import com.odop.community.dto.Post;
-import com.odop.community.dto.Posts;
-import com.odop.community.dto.ResponseMessage;
+import com.odop.community.domain.dto.CommentDTO;
+import com.odop.community.domain.dto.PostDTO;
+import com.odop.community.domain.dto.PostsDTO;
+import com.odop.community.domain.ResponseMessage;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-public class PostControllerImpl implements PostController{
+@RestController
+@RequestMapping("/posts")
+@RequiredArgsConstructor
+public class PostControllerImpl implements PostController {
+
 
     @Override
-    public ResponseEntity<Void> add(Post post) {
+    public ResponseEntity<Void> add(PostDTO postDTO) {
         return null;
     }
 
     @Override
-    public ResponseEntity<ResponseMessage<Posts>> getAll() {
+    public ResponseEntity<ResponseMessage<PostsDTO>> getAll() {
         return null;
     }
 
     @Override
-    public ResponseEntity<ResponseMessage<Post>> getById(long id) {
+    public ResponseEntity<ResponseMessage<PostDTO>> getById(long id) {
         return null;
     }
 
     @Override
-    public ResponseEntity<Void> update(Post post) {
+    public ResponseEntity<Void> update(PostDTO postDTO) {
         return null;
     }
 
@@ -34,7 +41,7 @@ public class PostControllerImpl implements PostController{
     }
 
     @Override
-    public ResponseEntity<Void> addComment(Comment comment) {
+    public ResponseEntity<Void> addComment(CommentDTO commentDTO) {
         return null;
     }
 

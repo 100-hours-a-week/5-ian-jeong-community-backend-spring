@@ -1,11 +1,13 @@
-package com.odop.community.dto;
+package com.odop.community.domain.dto;
+
+import com.odop.community.domain.entity.User;
 
 import java.util.List;
 
-public class Users {
+public class UsersDTO {
     private final List<User> users;
 
-    public Users(List<User> users) {
+    public UsersDTO(List<User> users) {
         this.users = users;
     }
 
@@ -31,7 +33,7 @@ public class Users {
 
     public boolean validateAccount(String email, String password) {
         // 순회하면서 아이디 비번 검증
-        for (User user : users) {
+        for (User users : users) {
             // 해시 검증 해야함
         }
 

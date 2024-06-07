@@ -5,6 +5,7 @@ import com.odop.community.domain.dto.UsersDTO;
 import com.odop.community.domain.entity.User;
 import com.odop.community.repository.UserRepository;
 import jakarta.transaction.Transactional;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.stereotype.Service;
@@ -29,10 +30,14 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public boolean validateDuplicatedNickname(String nickname) {
-        UsersDTO usersDTO = new UsersDTO(userRepository.selectAll());
+    public boolean validateDuplicatedNickname(String nickname) throws DataAccessResourceFailureException {
+        try {
+            UsersDTO usersDTO = new UsersDTO(userRepository.selectAll());
+            return usersDTO.validateDuplicatedNickname(nickname);
 
-        return usersDTO.validateDuplicatedNickname(nickname);
+        } catch (DataAccessResourceFailureException e) {
+            throw new DataAccessResourceFailureException(null, e);
+        }
     }
 
     @Override

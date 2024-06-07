@@ -19,9 +19,7 @@ public class UserControllerImpl implements UserController {
 
     @Override
     @GetMapping("/email")
-    public ResponseEntity<ResponseMessage<Boolean>> validateEmail(
-            @RequestParam(value="email") String email
-    ) {
+    public ResponseEntity<ResponseMessage<Boolean>> validateEmail(@RequestParam(value="email") String email) {
         try {
             boolean result = userService.validateDuplicatedEmail(email);
             ResponseMessage<Boolean> responseMessage = new ResponseMessage<>(result);
@@ -37,11 +35,18 @@ public class UserControllerImpl implements UserController {
 
     @Override
     @GetMapping("/nickname")
-    public ResponseEntity<ResponseMessage<Boolean>> validateNickname(@RequestParam String nickname) {
-        boolean result = userService.validateDuplicatedNickname(nickname);
-        ResponseMessage<Boolean> responseMessage = new ResponseMessage<>(result);
+    public ResponseEntity<ResponseMessage<Boolean>> validateNickname(@RequestParam(value="nickname") String nickname) {
+        try {
+            boolean result = userService.validateDuplicatedNickname(nickname);
+            ResponseMessage<Boolean> responseMessage = new ResponseMessage<>(result);
 
-        return new ResponseEntity<>(responseMessage, HttpStatus.OK);
+            return new ResponseEntity<>(responseMessage, HttpStatus.OK);
+        } catch(DataAccessResourceFailureException e) {
+            log.error("Error validating password = {}", e.getMessage());
+            e.printStackTrace();
+
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
 
@@ -49,6 +54,8 @@ public class UserControllerImpl implements UserController {
     @Override
     @PostMapping("/")
     public ResponseEntity<Void> join(@RequestBody UserDTO userDTO) {
+        
+
         try {
             userService.join(userDTO);
             return new ResponseEntity<>(HttpStatus.CREATED);

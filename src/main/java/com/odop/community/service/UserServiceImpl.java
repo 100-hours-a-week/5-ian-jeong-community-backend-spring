@@ -8,6 +8,7 @@ import jakarta.transaction.Transactional;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataAccessResourceFailureException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public boolean validateDuplicatedEmail(String email) throws DataAccessResourceFailureException {
@@ -43,16 +45,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public void join(UserDTO userDTO) {
         // 이미지 따로처리하고 경로 저장해야함
-        // id Long 타입으로 변경? 디비도 변경
-
-
-//        userDTO.encodePassword();
-//        User user = new User();
-//        userRepository.insert(userDTO);
+        // 비번 암호화
+        // 변경된 데이터들을 기반으로 엔티티 생성해서 insert
+        // 예외처리
     }
-
-
-
 
     @Override
     public boolean validateAccount(String email, String password) {
@@ -60,6 +56,9 @@ public class UserServiceImpl implements UserService {
         // 검증 통과여부에 따라 jwt 증 발급해야함
         return usersDTO.validateAccount(email, password);
     }
+
+
+
 
     @Override
     public UserDTO findById(long id) {

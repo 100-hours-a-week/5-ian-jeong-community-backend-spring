@@ -1,11 +1,10 @@
 package com.odop.community.domain.dto;
 
-import lombok.*;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import lombok.Getter;
+import lombok.Setter;
 
 @Getter
 @Setter
-@AllArgsConstructor
 public class UserDTO {
     private Long id;
     private String email;
@@ -13,10 +12,17 @@ public class UserDTO {
     private String nickname;
     private String image;
 
-    private final PasswordEncoder passwordEncoder;
+    public UserDTO() {}
 
-
-    public void encodePassword() {
-        password = passwordEncoder.encode(password);
+    public UserDTO(
+            String email,
+            String password,
+            String nickname,
+            String image
+    ) {
+        this.email = email;
+        this.password = password;
+        this.nickname = nickname;
+        this.image = image;
     }
 }

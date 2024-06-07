@@ -27,7 +27,8 @@ public class UserControllerImpl implements UserController {
             return new ResponseEntity<>(responseMessage,HttpStatus.OK);
         } catch (DataAccessResourceFailureException e) {
             log.error("Error validating email = {}", e.getMessage());
-            e.printStackTrace();
+
+
 
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -52,11 +53,14 @@ public class UserControllerImpl implements UserController {
 
 
     @Override
-    @PostMapping("/")
+    @PostMapping
     public ResponseEntity<Void> join(@RequestBody UserDTO userDTO) {
-        
-
         try {
+            System.out.println(userDTO.getEmail());
+            System.out.println(userDTO.getPassword());
+            System.out.println(userDTO.getNickname());
+            System.out.println(userDTO.getImage());
+
             userService.join(userDTO);
             return new ResponseEntity<>(HttpStatus.CREATED);
 

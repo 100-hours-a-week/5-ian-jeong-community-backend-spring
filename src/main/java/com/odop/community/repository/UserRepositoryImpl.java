@@ -2,16 +2,14 @@ package com.odop.community.repository;
 
 import com.odop.community.domain.dto.UserDTO;
 import com.odop.community.domain.entity.User;
-import lombok.Data;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.annotations.processing.SQL;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
-import java.sql.SQLException;
 import java.util.List;
 
 @Repository
@@ -45,6 +43,7 @@ public class UserRepositoryImpl implements UserRepository {
                     "DATE_FORMAT(deleted_at, '%Y-%m-%d %H:%i:%s') AS deleted_at " +
                     "FROM users " +
                     "WHERE deleted_at IS NULL";
+
             return jdbcTemplate.query(sql, BeanPropertyRowMapper.newInstance(User.class));
         } catch (DataAccessException e) {
             throw new DataAccessResourceFailureException("Error executing selectAll query", e);

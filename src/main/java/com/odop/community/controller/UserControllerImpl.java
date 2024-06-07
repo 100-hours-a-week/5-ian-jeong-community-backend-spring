@@ -19,7 +19,9 @@ public class UserControllerImpl implements UserController {
 
     @Override
     @GetMapping("/email")
-    public ResponseEntity<ResponseMessage<Boolean>> validateEmail(@RequestParam String email) {
+    public ResponseEntity<ResponseMessage<Boolean>> validateEmail(
+            @RequestParam(value="email") String email
+    ) {
         try {
             boolean result = userService.validateDuplicatedEmail(email);
             ResponseMessage<Boolean> responseMessage = new ResponseMessage<>(result);

@@ -2,10 +2,8 @@ package com.odop.community.service;
 
 import com.odop.community.domain.dto.UserDTO;
 import com.odop.community.domain.dto.UsersDTO;
-import com.odop.community.domain.entity.User;
 import com.odop.community.repository.UserRepository;
 import jakarta.transaction.Transactional;
-import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -53,7 +51,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void join(UserDTO userDTO) {
+    public void join(UserDTO userDTO) throws IOException, DataAccessResourceFailureException{
         if (!userDTO.getImage().equals("")) {
             String imageName = UUID.randomUUID().toString();
             Path imagePath = Paths.get(USER_IMAGE_DIRECTORY + imageName);
@@ -62,19 +60,31 @@ public class UserServiceImpl implements UserService {
                 FileCopyUtils.copy(userDTO.getImage().getBytes(), outputStream);
                 userDTO.setImage(imageName);
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                throw new IOException(e);
             }
         }
 
-        userDTO.setPassword(passwordEncoder.encode(userDTO.getPassword()));
-        userRepository.insert(userDTO);
+        try {
+            userDTO.setPassword(passwordEncoder.encode(userDTO.getPassword()));
+            userRepository.insert(userDTO);
+
+        } catch (DataAccessResourceFailureException e) {
+            throw new DataAccessResourceFailureException(null, e);
+        }
     }
 
+
     @Override
-    public boolean validateAccount(String email, String password) {
+    public boolean validateAccount(UserDTO userDTO) {
         UsersDTO usersDTO = new UsersDTO(userRepository.selectAll());
-        // 검증 통과여부에 따라 jwt 증 발급해야함
-        return usersDTO.validateAccount(email, password);
+
+        if(usersDTO.validateAccount(userDTO, passwordEncoder::matches)) {
+            // 검증 통과여부에 따라 jwt 증 발급해야함
+
+        }
+
+        // 에러처처리
+        return null;
     }
 
 
@@ -82,16 +92,24 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDTO findById(long id) {
+        // 불러와서 이미지 경로에서불어와야됨
         return userRepository.selectById(id); // 옵셔널 처리?
     }
 
     @Override
     public void update(UserDTO userDTO) {
+        // 이미지 업데이트시 확인해야함
+
         userRepository.update(userDTO);
     }
 
     @Override
     public void withdraw(long id) {
         userRepository.delete(id);
+    }
+
+    @FunctionalInterface
+    public interface PasswordValidator {
+        boolean validate(String rawPassword, String encodedPassword);
     }
 }

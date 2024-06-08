@@ -1,6 +1,7 @@
 package com.odop.community.domain.dto;
 
 import com.odop.community.domain.entity.User;
+import com.odop.community.service.UserServiceImpl;
 
 import java.util.List;
 
@@ -31,10 +32,13 @@ public class UsersDTO {
         return true;
     }
 
-    public boolean validateAccount(String email, String password) {
-        // 순회하면서 아이디 비번 검증
-        for (User users : users) {
-            // 해시 검증 해야함
+    public boolean validateAccount(UserDTO userDTO, UserServiceImpl.PasswordValidator passwordValidator) {
+        for (User user : users) {
+            if (user.getEmail().equals(userDTO.getEmail())) {
+                if (passwordValidator.validate(userDTO.getPassword(), user.getPassword())) {
+                    return true;
+                }
+            }
         }
 
         return false;

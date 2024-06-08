@@ -1,8 +1,5 @@
 package com.odop.community.repository;
 
-import com.odop.community.domain.dto.CommentDTO;
-import com.odop.community.domain.dto.PostDTO;
-
 import com.odop.community.domain.entity.Comment;
 import com.odop.community.domain.entity.Post;
 import com.odop.community.domain.entity.QComment;

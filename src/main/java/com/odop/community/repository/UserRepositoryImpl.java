@@ -7,7 +7,6 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -18,16 +17,21 @@ public class UserRepositoryImpl implements UserRepository {
     private final JdbcTemplate jdbcTemplate;
 
     @Override
-    public void insert(UserDTO userDTO) {
-        String sql = "INSERT INTO users (email, password, nickname, image) " +
-                "VALUES (?, ?, ?, ?)";
-        jdbcTemplate.update(
-                sql,
-                userDTO.getEmail(),
-                userDTO.getPassword(),
-                userDTO.getNickname(),
-                userDTO.getImage()
-        );
+    public void insert(UserDTO userDTO) throws DataAccessException {
+        try {
+            String sql = "INSERT INTO users (email, password, nickname, image) " +
+                    "VALUES (?, ?, ?, ?)";
+            jdbcTemplate.update(
+                    sql,
+                    userDTO.getEmail(),
+                    userDTO.getPassword(),
+                    userDTO.getNickname(),
+                    userDTO.getImage()
+            );
+
+        } catch(DataAccessException e) {
+            throw new DataAccessResourceFailureException("Error executing insert query", e);
+        }
     }
 
     @Override

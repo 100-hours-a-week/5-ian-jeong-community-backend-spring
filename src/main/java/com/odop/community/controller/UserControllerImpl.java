@@ -10,6 +10,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
+
 @Slf4j
 @RestController
 @RequestMapping("/users")
@@ -59,7 +61,14 @@ public class UserControllerImpl implements UserController {
             userService.join(userDTO);
             return new ResponseEntity<>(HttpStatus.CREATED);
 
-        } catch (Exception e) {
+        } catch (DataAccessResourceFailureException e) {
+            log.error("Error attempting to sign up = {}", e.getMessage());
+            e.printStackTrace();
+
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (IOException e) {
+            log.error("Error attempting to save image = {}", e.getMessage());
+            e.printStackTrace();
 
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -68,8 +77,9 @@ public class UserControllerImpl implements UserController {
 
 
     @Override
-    public ResponseEntity<ResponseMessage<Boolean>> validateAccount(@RequestParam String email, String nickname) {
-        boolean result = userService.validateAccount(email, nickname);
+    @PostMapping("/sign-in")
+    public ResponseEntity<ResponseMessage<Boolean>> validateAccount(@RequestBody UserDTO userDTO) {
+        boolean result = userService.validateAccount(userDTO);
         ResponseMessage<Boolean> responseMessage = new ResponseMessage<>(result);
 
         return new ResponseEntity<>(responseMessage, HttpStatus.OK);

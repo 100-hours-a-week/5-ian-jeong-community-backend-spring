@@ -6,11 +6,13 @@ import com.odop.community.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessResourceFailureException;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.Optional;
 
 @Slf4j
 @RestController
@@ -78,11 +80,17 @@ public class UserControllerImpl implements UserController {
 
     @Override
     @PostMapping("/sign-in")
-    public ResponseEntity<ResponseMessage<Boolean>> validateAccount(@RequestBody UserDTO userDTO) {
-        boolean result = userService.validateAccount(userDTO);
-        ResponseMessage<Boolean> responseMessage = new ResponseMessage<>(result);
+    public ResponseEntity<Void> validateAccount(@RequestBody UserDTO userDTO) {
+        Optional<String> token = userService.validateAccount(userDTO);
 
-        return new ResponseEntity<>(responseMessage, HttpStatus.OK);
+        if (token.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.AUTHORIZATION, "Bearer " + token.get());
+
+        return ResponseEntity.ok().headers(headers).build();
     }
 
     @Override

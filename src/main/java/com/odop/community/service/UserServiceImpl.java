@@ -1,5 +1,6 @@
 package com.odop.community.service;
 
+import com.odop.community.auth.JWTUtil;
 import com.odop.community.domain.dto.UserDTO;
 import com.odop.community.domain.dto.UsersDTO;
 import com.odop.community.repository.UserRepository;
@@ -15,6 +16,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -25,6 +27,7 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JWTUtil jwtUtil;
 
     @Override
     public boolean validateDuplicatedEmail(String email) throws DataAccessResourceFailureException {
@@ -75,16 +78,15 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public boolean validateAccount(UserDTO userDTO) {
+    public Optional<String> validateAccount(UserDTO userDTO) {
         UsersDTO usersDTO = new UsersDTO(userRepository.selectAll());
 
         if(usersDTO.validateAccount(userDTO, passwordEncoder::matches)) {
-            // 검증 통과여부에 따라 jwt 증 발급해야함
-
+            String token = jwtUtil.createJwt(userDTO.getNickname(), 1000L * 60L);
+            return Optional.of(token);
         }
 
-        // 에러처처리
-        return null;
+        return Optional.empty();
     }
 
 

@@ -6,6 +6,8 @@ import com.odop.community.domain.entity.User;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Setter
 public class PostDTO {
@@ -15,6 +17,7 @@ public class PostDTO {
     private String content;
     private String imageName;
     private String image;
+    private LocalDateTime created_at;
 
     public PostDTO() {}
 

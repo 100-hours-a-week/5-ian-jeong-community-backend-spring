@@ -7,6 +7,7 @@ import com.odop.community.domain.entity.QPost;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataAccessResourceFailureException;
@@ -29,17 +30,22 @@ public class PostRepositoryImpl implements PostRepository {
             entityManager.persist(post);
         } catch(DataAccessException e) {
             throw new DataAccessResourceFailureException("Error executing insert query", e);
+        } finally {
+            entityManager.close();
         }
     }
 
     @Override
     public List<Post> selectAll() {
-//        return jpaQueryFactory.select(qPost)
-//                .from(qPost)
-//                .where(qPost.deletedAt.isNull())
-//                .orderBy(qPost.createdAt.desc())
-//                .fetch();
-        return null;
+        try {
+            return jpaQueryFactory.select(qPost)
+                    .from(qPost)
+                    .where(qPost.deletedAt.isNull())
+                    .orderBy(qPost.createdAt.desc())
+                    .fetch();
+        } catch (DataAccessException e) {
+            throw new DataAccessResourceFailureException("Error executing select query", e);
+        }
     }
 
     @Override

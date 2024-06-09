@@ -4,13 +4,16 @@ import com.odop.community.domain.dto.CommentDTO;
 import com.odop.community.domain.dto.PostDTO;
 import com.odop.community.domain.dto.PostsDTO;
 import com.odop.community.domain.ResponseMessage;
+import com.odop.community.domain.entity.Post;
 import org.springframework.http.ResponseEntity;
+
+import java.util.List;
 
 
 public interface PostController {
     ResponseEntity<Void> add(PostDTO postDTO);
-    ResponseEntity<ResponseMessage<PostsDTO>> getAll();
-    ResponseEntity<ResponseMessage<PostDTO>> getById(Long id);
+    ResponseEntity<ResponseMessage<List<Post>>> findAll();
+    ResponseEntity<ResponseMessage<PostDTO>> findById(Long id);
     ResponseEntity<Void> modify(PostDTO postDTO);
     ResponseEntity<Void> delete(Long id);
 

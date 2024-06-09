@@ -1,11 +1,17 @@
 package com.odop.community.domain.dto;
 
+import com.odop.community.domain.entity.Post;
+
 import java.util.List;
 
 public class PostsDTO {
-    private final List<PostDTO> postsDTO;
+    private final List<Post> postsDTO;
 
-    public PostsDTO(List<PostDTO> postsDTO) {
-        this.postsDTO = postsDTO;
+    public PostsDTO(List<Post> posts) {
+        this.postsDTO = posts;
+    }
+
+    public List<Post> getList() {
+        return postsDTO;
     }
 }

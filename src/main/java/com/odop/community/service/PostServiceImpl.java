@@ -42,13 +42,13 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public PostsDTO getAll() {
-        return null;
+    public PostsDTO findAll() {
+        return new PostsDTO(postRepository.selectAll());
     }
 
     @Override
 
-    public PostDTO getById() {
+    public PostDTO findById() {
         return null;
     }
 

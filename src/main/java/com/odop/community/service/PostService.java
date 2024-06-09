@@ -8,8 +8,8 @@ import java.io.IOException;
 
 public interface PostService {
     void add(PostDTO postDTO) throws IOException;
-    PostsDTO getAll();
-    PostDTO getById();
+    PostsDTO findAll();
+    PostDTO findById();
     void modify();
     void delete();
 

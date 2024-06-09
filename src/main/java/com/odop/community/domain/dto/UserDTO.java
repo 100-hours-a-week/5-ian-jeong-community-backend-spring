@@ -1,12 +1,8 @@
 package com.odop.community.domain.dto;
 
 import com.odop.community.domain.entity.User;
-import jakarta.persistence.Column;
 import lombok.Getter;
 import lombok.Setter;
-import org.aspectj.weaver.bcel.BcelRenderer;
-
-import java.time.LocalDateTime;
 
 @Getter
 @Setter

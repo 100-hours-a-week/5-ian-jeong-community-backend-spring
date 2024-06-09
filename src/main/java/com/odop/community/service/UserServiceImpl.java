@@ -68,7 +68,7 @@ public class UserServiceImpl implements UserService {
         UsersDTO usersDTO = new UsersDTO(userRepository.selectAll());
 
         if(usersDTO.validateAccount(userDTO, passwordEncoder::matches)) {
-            String token = jwtUtil.createJwt(userDTO.getNickname(), 1000 * 60 * 60 * 24L);
+            String token = jwtUtil.createJwt(userDTO.getNickname());
             return Optional.of(token);
         }
 

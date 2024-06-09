@@ -25,7 +25,8 @@ public class UserControllerImpl implements UserController {
     @Override
     @GetMapping("/email")
     public ResponseEntity<ResponseMessage<Boolean>> validateEmail(@RequestParam(value="email") String email) {
-        UserDTO userDTO = new UserDTO(null, email, null, null, null);
+        UserDTO userDTO = new UserDTO();
+        userDTO.setEmail(email);
 
         try {
             boolean result = userService.validateDuplicatedEmail(userDTO);
@@ -35,8 +36,6 @@ public class UserControllerImpl implements UserController {
         } catch (DataAccessResourceFailureException e) {
             log.error("Error validating email = {}", e.getMessage());
 
-
-
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -44,7 +43,8 @@ public class UserControllerImpl implements UserController {
     @Override
     @GetMapping("/nickname")
     public ResponseEntity<ResponseMessage<Boolean>> validateNickname(@RequestParam(value="nickname") String nickname) {
-        UserDTO userDTO = new UserDTO(null, null, nickname, null, null);
+        UserDTO userDTO = new UserDTO();
+        userDTO.setNickname(nickname);
 
         try {
             boolean result = userService.validateDuplicatedNickname(userDTO);
@@ -58,8 +58,6 @@ public class UserControllerImpl implements UserController {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
-
 
     @Override
     @PostMapping
@@ -183,10 +181,11 @@ public class UserControllerImpl implements UserController {
     @DeleteMapping("/{userId}")
     public ResponseEntity<Void> withdraw(@PathVariable("userId") Long id) {
         try {
-            UserDTO userDTO = new UserDTO(id, null, null, null, null);
+            UserDTO userDTO = new UserDTO();
+            userDTO.setId(id);
             userService.withdraw(userDTO);
 
-        } catch(DataAccessResourceFailureException e) {
+        } catch (DataAccessResourceFailureException e) {
             log.error("Error attempting to delete a user by id = {}", e.getMessage());
             e.printStackTrace();
 

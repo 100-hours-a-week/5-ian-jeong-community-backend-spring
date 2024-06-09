@@ -6,6 +6,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -39,19 +41,22 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(AbstractHttpConfigurer::disable)
-                .formLogin(AbstractHttpConfigurer::disable)
-                .httpBasic(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests((requests) -> requests
-                        .requestMatchers(
-                                "/users/sign-in",
-                                "/users/sign-up",
-                                "/users/email",
-                                "/users/password",
-                                "/users").permitAll()
-                        .anyRequest().permitAll())
-                .addFilterAt(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+                .httpBasic(AbstractHttpConfigurer::disable)  // HTTP Basic 인증을 비활성화
+                .csrf(AbstractHttpConfigurer::disable)  // CSRF 보호 기능을 비활성화
                 .cors(withDefaults())
+                .formLogin(AbstractHttpConfigurer::disable)  // 폼 기반 로그인을 비활성화(기본 로그인 페이지를 사용하지 않도록 설정)
+                .authorizeHttpRequests((requests) -> {
+                    requests.requestMatchers(  // 요청 매처를 지정하여 특정 요청 경로에 대한 권한을 설정
+                                    "/users/sign-in",
+                                    "/users/sign-up",
+                                    "/users/email",
+                                    "/users/nickname",
+                                    "/users").permitAll()
+                            .requestMatchers(HttpMethod.GET, "/users").authenticated()
+                            .anyRequest().authenticated();
+                })
+
+                .addFilterAt(jwtFilter, UsernamePasswordAuthenticationFilter.class)  // HTTP 요청을 가로채서 JWT 토큰의 유효성을 검사하고 사용자를 인증
                 .sessionManagement((session) -> session
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 

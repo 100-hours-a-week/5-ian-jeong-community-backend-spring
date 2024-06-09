@@ -1,16 +1,19 @@
 package com.odop.community.auth;
 
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
 @Component
 public class JWTUtil {
-    private SecretKey secretKey = Keys.secretKeyFor(SignatureAlgorithm.HS256);
+    private String secret = "testSecretKey20230327testSecretKey20230327testSecretKey20230327";
+    private SecretKey secretKey = new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8),
+                Jwts.SIG.HS256.key().build().getAlgorithm());
 
     public String getNickname(String token) {
         return Jwts
@@ -35,6 +38,10 @@ public class JWTUtil {
 
     public String createJwt(String nickname, Long expiredMs) {
         return Jwts.builder()
+                .header()
+                .add("typ", "JWT")
+                .and()
+
                 .claim("nickname", nickname)
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + expiredMs))

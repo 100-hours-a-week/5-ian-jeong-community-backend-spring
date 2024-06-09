@@ -43,6 +43,20 @@ public class User {
             String email,
             String password,
             String nickname,
+            String image
+            ) {
+        this.id = id;
+        this.email = email;
+        this.password = password;
+        this.nickname = nickname;
+        this.image = image;
+    }
+
+    public User(
+            Long id,
+            String email,
+            String password,
+            String nickname,
             String image,
             LocalDateTime createdAt,
             LocalDateTime updatedAt,

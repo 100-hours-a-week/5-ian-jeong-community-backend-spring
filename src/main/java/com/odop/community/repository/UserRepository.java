@@ -1,15 +1,15 @@
 package com.odop.community.repository;
 
-import com.odop.community.domain.dto.UserDTO;
 import com.odop.community.domain.entity.User;
-import org.springframework.dao.DataAccessException;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface UserRepository {
-    void insert(UserDTO userDTO);
-    List<User> selectAll() throws DataAccessException;
-    UserDTO selectById(long id);
-    void update(UserDTO userDTO);
-    void delete(long id);
+    void insert(User user);
+    List<User> selectAll() ;
+    User selectById(User user);
+    void update(User user);
+    void updatePassword(User user);
+    void delete(User user);
 }

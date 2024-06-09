@@ -9,7 +9,8 @@ public interface UserController {
     ResponseEntity<ResponseMessage<Boolean>> validateEmail(String email);
     ResponseEntity<ResponseMessage<Boolean>> validateNickname(String nickname);
     ResponseEntity<Void> validateAccount(UserDTO userDTO);
-    ResponseEntity<ResponseMessage<UserDTO>> findById(long id);
-    ResponseEntity<Void> update(UserDTO userDTO);
-    ResponseEntity<Void> withdraw(long id);
+    ResponseEntity<ResponseMessage<UserDTO>> findById(Long id);
+    ResponseEntity<Void> modify(Long id, UserDTO userDTO);
+    ResponseEntity<Void> modifyPassword(Long id, UserDTO userDTO);
+    ResponseEntity<Void> withdraw(Long id);
 }

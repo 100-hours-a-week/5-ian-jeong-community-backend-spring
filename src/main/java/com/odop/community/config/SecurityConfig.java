@@ -43,10 +43,11 @@ public class SecurityConfig {
         http
                 .httpBasic(AbstractHttpConfigurer::disable)  // HTTP Basic 인증을 비활성화
                 .csrf(AbstractHttpConfigurer::disable)  // CSRF 보호 기능을 비활성화
-                .cors(withDefaults())
                 .formLogin(AbstractHttpConfigurer::disable)  // 폼 기반 로그인을 비활성화(기본 로그인 페이지를 사용하지 않도록 설정)
+                .cors(withDefaults())
+
                 .authorizeHttpRequests((requests) -> {
-                    requests.requestMatchers(  // 요청 매처를 지정하여 특정 요청 경로에 대한 권한을 설정
+                    requests.requestMatchers(
                                     "/users/sign-in",
                                     "/users/sign-up",
                                     "/users/email",

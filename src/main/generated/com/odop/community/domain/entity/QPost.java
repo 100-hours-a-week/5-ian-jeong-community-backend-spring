@@ -19,7 +19,7 @@ public class QPost extends EntityPathBase<Post> {
 
     public static final QPost post = new QPost("post");
 
-    public final NumberPath<Long> CommentCount = createNumber("CommentCount", Long.class);
+    public final NumberPath<Long> commentCount = createNumber("commentCount", Long.class);
 
     public final StringPath content = createString("content");
 

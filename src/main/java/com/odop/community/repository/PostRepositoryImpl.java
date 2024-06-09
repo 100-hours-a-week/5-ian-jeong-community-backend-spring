@@ -5,7 +5,11 @@ import com.odop.community.domain.entity.Post;
 import com.odop.community.domain.entity.QComment;
 import com.odop.community.domain.entity.QPost;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataAccessException;
+import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -13,19 +17,19 @@ import java.util.List;
 @Repository
 @RequiredArgsConstructor
 public class PostRepositoryImpl implements PostRepository {
+    @PersistenceContext
+    private EntityManager entityManager;
     private final JPAQueryFactory jpaQueryFactory;
     private final QPost qPost = QPost.post;
     private final QComment qComment = QComment.comment;
 
     @Override
     public void insert(Post post) {
-        jpaQueryFactory.insert(qPost)
-                .set(qPost.userId, post.getUserId())
-                .set(qPost.title, post.getTitle())
-                .set(qPost.content, post.getContent())
-                .set(qPost.image, post.getImage())
-                .set(qPost.imageName, post.getImageName())
-                .execute();
+        try {
+            entityManager.persist(post);
+        } catch(DataAccessException e) {
+            throw new DataAccessResourceFailureException("Error executing insert query", e);
+        }
     }
 
     @Override
@@ -39,7 +43,7 @@ public class PostRepositoryImpl implements PostRepository {
     }
 
     @Override
-    public Post selectById(long postId) {
+    public Post selectById(Long postId) {
         jpaQueryFactory.update(qPost)
                 .set(qPost.viewCount, qPost.viewCount.add(1))
                 .where(qPost.id.eq(postId).and(qPost.deletedAt.isNull()))
@@ -72,7 +76,7 @@ public class PostRepositoryImpl implements PostRepository {
     }
 
     @Override
-    public void delete(long postId) {
+    public void delete(Long postId) {
 
     }
 
@@ -82,12 +86,12 @@ public class PostRepositoryImpl implements PostRepository {
     }
 
     @Override
-    public void updateComment(long commentId) {
+    public void updateComment(Long commentId) {
 
     }
 
     @Override
-    public void deleteComment(long commentId) {
+    public void deleteComment(Long commentId) {
 
     }
 }

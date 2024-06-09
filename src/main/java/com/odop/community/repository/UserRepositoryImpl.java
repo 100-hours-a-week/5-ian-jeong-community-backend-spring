@@ -53,7 +53,7 @@ public class UserRepositoryImpl implements UserRepository {
     public List<User> selectAll() {
         try {
             return jdbcTemplate.query(SELECT_ALL, BeanPropertyRowMapper.newInstance(User.class));
-            
+
         } catch (DataAccessException e) {
             throw new DataAccessResourceFailureException("Error executing selectAll query", e);
         }

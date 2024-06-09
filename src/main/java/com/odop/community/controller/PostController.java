@@ -10,11 +10,11 @@ import org.springframework.http.ResponseEntity;
 public interface PostController {
     ResponseEntity<Void> add(PostDTO postDTO);
     ResponseEntity<ResponseMessage<PostsDTO>> getAll();
-    ResponseEntity<ResponseMessage<PostDTO>> getById(long id);
-    ResponseEntity<Void> update(PostDTO postDTO);
-    ResponseEntity<Void> delete(long id);
+    ResponseEntity<ResponseMessage<PostDTO>> getById(Long id);
+    ResponseEntity<Void> modify(PostDTO postDTO);
+    ResponseEntity<Void> delete(Long id);
 
     ResponseEntity<Void> addComment(CommentDTO commentDTO);
-    ResponseEntity<Void> updateComment(long id, String text);
-    ResponseEntity<Void> deleteComment(long id);
+    ResponseEntity<Void> updateComment(Long id, String text);
+    ResponseEntity<Void> deleteComment(Long id);
 }

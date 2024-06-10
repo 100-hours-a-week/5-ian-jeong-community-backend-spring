@@ -120,6 +120,6 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public void removeComment(CommentDTO commentDTO) {
-
+        postRepository.deleteComment(commentDTO.convertToEntity());
     }
 }

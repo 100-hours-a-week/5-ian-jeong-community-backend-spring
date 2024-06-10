@@ -19,5 +19,5 @@ public interface PostController {
 
     ResponseEntity<Void> addComment(Long postId, CommentDTO commentDTO);
     ResponseEntity<Void> modifyComment(Long postId, Long id, CommentDTO commentDTO);
-    ResponseEntity<Void> deleteComment(Long id);
+    ResponseEntity<Void> removeComment(Long id);
 }

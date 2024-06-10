@@ -134,6 +134,13 @@ public class PostRepositoryImpl implements PostRepository {
 
     @Override
     public void deleteComment(Comment comment) {
-
+        try {
+            jpaQueryFactory.update(qComment)
+                    .where(qComment.id.eq(comment.getId()))
+                    .set(qComment.deletedAt, LocalDateTime.now())
+                    .execute();
+        } catch (DataAccessException e) {
+            throw new DataAccessResourceFailureException("Error executing delete query", e);
+        }
     }
 }

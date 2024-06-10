@@ -178,9 +178,17 @@ public class PostControllerImpl implements PostController {
 
     @Override
     @DeleteMapping("/{postId}/comments/{commentId}")
-    public ResponseEntity<Void> deleteComment(@PathVariable("commentId") Long id) {
+    public ResponseEntity<Void> removeComment(@PathVariable("commentId") Long id) {
+        try {
+            CommentDTO commentDTO = new CommentDTO(id, null, null, null, null);
+            postService.removeComment(commentDTO);
 
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        } catch (DataAccessResourceFailureException e) {
+            log.error("Error attempting to delete a comment = {}", e.getMessage());
+            e.printStackTrace();
 
-        return null;
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 }

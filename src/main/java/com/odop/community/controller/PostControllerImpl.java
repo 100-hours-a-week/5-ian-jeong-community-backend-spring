@@ -132,7 +132,10 @@ public class PostControllerImpl implements PostController {
 
     @Override
     @PostMapping("/{postId}/comments")
-    public ResponseEntity<Void> addComment(@PathVariable("postId") Long postId, @RequestBody CommentDTO commentDTO) {
+    public ResponseEntity<Void> addComment(
+            @PathVariable("postId") Long postId,
+            @RequestBody CommentDTO commentDTO
+    ) {
         commentDTO.setPostId(postId);
         try {
             postService.addComment(commentDTO);
@@ -147,17 +150,37 @@ public class PostControllerImpl implements PostController {
     }
 
     @Override
-    @PostMapping("/{postId}/comments/{commentId}")
-    public ResponseEntity<Void> modifyComment(Long id, String text) {
-        // pathvariable 어노테이션 ㄱㄱ
+    @PatchMapping("/{postId}/comments/{commentId}")
+    public ResponseEntity<Void> modifyComment(
+            @PathVariable("postId") Long postId,
+            @PathVariable("commentId") Long id,
+            @RequestBody CommentDTO commentDTO
+    ) {
+        commentDTO.setId(id);
+        commentDTO.setPostId(postId);
 
-        return null;
+        try {
+            postService.modifyComment(commentDTO);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+
+        } catch(EmptyResultDataAccessException e) {
+            log.error("Error attempting to find a comment by id = {}", e.getMessage());
+            e.printStackTrace();
+
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } catch (DataAccessResourceFailureException e) {
+            log.error("Error attempting to find a comment by id = {}", e.getMessage());
+            e.printStackTrace();
+
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @Override
     @DeleteMapping("/{postId}/comments/{commentId}")
-    public ResponseEntity<Void> deleteComment(Long id) {
-        // pathvariable 어노테이션 ㄱㄱ
+    public ResponseEntity<Void> deleteComment(@PathVariable("commentId") Long id) {
+
+
         return null;
     }
 }

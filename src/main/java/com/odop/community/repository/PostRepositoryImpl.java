@@ -121,7 +121,15 @@ public class PostRepositoryImpl implements PostRepository {
 
     @Override
     public void updateComment(Comment comment) {
+        try {
+            jpaQueryFactory.update(qComment)
+                    .where(qComment.id.eq(comment.getId()))
+                    .set(qComment.content, comment.getContent())
+                    .execute();
 
+        } catch (DataAccessException e) {
+            throw new DataAccessResourceFailureException("Error executing update query", e);
+        }
     }
 
     @Override

@@ -114,12 +114,12 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public void updateComment(CommentDTO commentDTO) {
-
+    public void modifyComment(CommentDTO commentDTO) {
+        postRepository.updateComment(commentDTO.convertToEntity());
     }
 
     @Override
-    public void deleteComment(CommentDTO commentDTO) {
+    public void removeComment(CommentDTO commentDTO) {
 
     }
 }

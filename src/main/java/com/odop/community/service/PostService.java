@@ -15,6 +15,6 @@ public interface PostService {
     void remove(PostDTO postDTO);
 
     void addComment(CommentDTO commentDTO);
-    void updateComment(CommentDTO commentDTO);
-    void deleteComment(CommentDTO commentDTO);
+    void modifyComment(CommentDTO commentDTO);
+    void removeComment(CommentDTO commentDTO);
 }

@@ -2,8 +2,9 @@ package com.odop.community.controller;
 
 import com.odop.community.domain.dto.CommentDTO;
 import com.odop.community.domain.dto.PostDTO;
+import com.odop.community.domain.dto.PostDetailDTO;
 import com.odop.community.domain.dto.PostsDTO;
-import com.odop.community.domain.ResponseMessage;
+import com.odop.community.domain.ResponseData;
 import com.odop.community.domain.entity.Post;
 import com.odop.community.service.PostService;
 import lombok.RequiredArgsConstructor;
@@ -46,15 +47,24 @@ public class PostControllerImpl implements PostController {
 
     @Override
     @GetMapping
-    public ResponseEntity<ResponseMessage<List<Post>>> findAll() {
+    public ResponseEntity<ResponseData<List<Post>>> findAll() {
         try {
             PostsDTO postsDTO = postService.findAll();
-            ResponseMessage<List<Post>> responseMessage = new ResponseMessage<>(postsDTO.getList());
+            if (postsDTO.getList().size() == 0) {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
 
-            return new ResponseEntity<>(responseMessage, HttpStatus.OK);
+            ResponseData<List<Post>> responseData = new ResponseData<>(postsDTO.getList());
+
+            return new ResponseEntity<>(responseData, HttpStatus.OK);
 
         } catch(DataAccessResourceFailureException e) {
             log.error("Error fetching posts = {}", e.getMessage());
+            e.printStackTrace();
+
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (IOException e) {
+            log.error("Error loading image of post = {}", e.getMessage());
             e.printStackTrace();
 
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -62,31 +72,49 @@ public class PostControllerImpl implements PostController {
     }
 
     @Override
-    public ResponseEntity<ResponseMessage<PostDTO>> findById(Long id) {
+    @GetMapping("/{postId}")
+    public ResponseEntity<ResponseData<PostDetailDTO>> findById(@PathVariable("postId") Long id) {
+        PostDTO postDTO = new PostDTO(id, null, null, null, null, null, null);
+        try {
+            PostDetailDTO postDetailDTO = postService.findById(postDTO);
+            ResponseData<PostDetailDTO> responseData = new ResponseData<>(postDetailDTO);
+
+            return new ResponseEntity<>(responseData, HttpStatus.OK);
+
+        } catch(RuntimeException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+
+
+    @Override
+    @PatchMapping("/{postId}")
+    public ResponseEntity<Void> modify(@RequestBody PostDTO postDTO) {
+
         return null;
     }
 
     @Override
-    public ResponseEntity<Void> modify(PostDTO postDTO) {
+    @DeleteMapping("/{postId}")
+    public ResponseEntity<Void> delete(@PathVariable("postId") Long id) {
         return null;
     }
 
     @Override
-    public ResponseEntity<Void> delete(Long id) {
+    @PostMapping("/{postId}/comments")
+    public ResponseEntity<Void> addComment(@RequestBody CommentDTO commentDTO) {
         return null;
     }
 
     @Override
-    public ResponseEntity<Void> addComment(CommentDTO commentDTO) {
+    @PostMapping("/{postId}/comments/{commentId}")
+    public ResponseEntity<Void> modifyComment(Long id, String text) {
         return null;
     }
 
     @Override
-    public ResponseEntity<Void> updateComment(Long id, String text) {
-        return null;
-    }
-
-    @Override
+    @DeleteMapping("/{postId}/comments/{commentId}")
     public ResponseEntity<Void> deleteComment(Long id) {
         return null;
     }

@@ -24,8 +24,10 @@ public class Post {
     @Column(nullable = false)
     private String content;
 
-    private String imageName;
     private String image;
+
+    @Column(name="image_name")
+    private String imageName;
 
     @Column(name="view_count" ,nullable = false)
     private Long viewCount;
@@ -59,12 +61,14 @@ public class Post {
     public Post() {}
 
     public Post(
+            Long id,
             Long userId,
             String title,
             String content,
             String imageName,
             String image
     ) {
+        this.id = id;
         this.userId = userId;
         this.title = title;
         this.content = content;

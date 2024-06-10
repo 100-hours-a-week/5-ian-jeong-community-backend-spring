@@ -1,5 +1,6 @@
 package com.odop.community.repository;
 
+import com.odop.community.domain.dto.PostDTO;
 import com.odop.community.domain.entity.Comment;
 import com.odop.community.domain.entity.Post;
 import com.odop.community.domain.entity.QComment;
@@ -7,7 +8,6 @@ import com.odop.community.domain.entity.QPost;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
-import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataAccessResourceFailureException;
@@ -49,31 +49,21 @@ public class PostRepositoryImpl implements PostRepository {
     }
 
     @Override
-    public Post selectById(Long postId) {
-        jpaQueryFactory.update(qPost)
-                .set(qPost.viewCount, qPost.viewCount.add(1))
-                .where(qPost.id.eq(postId).and(qPost.deletedAt.isNull()))
-                .execute();
+    public Post selectById(Post post) {
+        try {
+            jpaQueryFactory.update(qPost)
+                    .set(qPost.viewCount, qPost.viewCount.add(1))
+                    .where(qPost.id.eq(post.getId()).and(qPost.deletedAt.isNull()))
+                    .execute();
 
-        Post post = jpaQueryFactory.selectFrom(qPost)
-                .where(qPost.id.eq(postId).and(qPost.deletedAt.isNull()))
-                .fetchOne();
 
-        if (post == null) {
-            throw new RuntimeException("Post not found");
+            return jpaQueryFactory.selectFrom(qPost)
+                    .where(qPost.id.eq(post.getId()).and(qPost.deletedAt.isNull()))
+                    .fetchOne();
+
+        } catch (DataAccessException e) {
+            throw new DataAccessResourceFailureException("Error executing select query", e);
         }
-
-        List<Comment> comments = jpaQueryFactory.selectFrom(qComment)
-                .where(qComment.postId.eq(postId).and(qComment.deletedAt.isNull()))
-                .orderBy(qComment.createdAt.desc())
-                .fetch();
-
-
-        // DTO 와 엔티티 분리 (디비관리 모양새와 다르기때문)
-        // 격리수준세팅
-
-
-        return null;
     }
 
     @Override
@@ -82,22 +72,35 @@ public class PostRepositoryImpl implements PostRepository {
     }
 
     @Override
-    public void delete(Long postId) {
+    public void delete(Post post) {
 
     }
 
     @Override
-    public void voidInsertComment(Comment comment) {
+    public void insertComment(Comment comment) {
 
     }
 
     @Override
-    public void updateComment(Long commentId) {
+    public List<Comment> selectAllComments(PostDTO postDTO) {
+        try {
+             return jpaQueryFactory.selectFrom(qComment)
+                    .where(qComment.postId.eq(postDTO.getId()).and(qComment.deletedAt.isNull()))
+                    .orderBy(qComment.createdAt.desc())
+                    .fetch();
+
+        } catch(DataAccessException e) {
+            throw new DataAccessResourceFailureException("Error executing select query", e);
+        }
+    }
+
+    @Override
+    public void updateComment(Comment comment) {
 
     }
 
     @Override
-    public void deleteComment(Long commentId) {
+    public void deleteComment(Comment comment) {
 
     }
 }

@@ -2,18 +2,25 @@ package com.odop.community.service;
 
 import com.odop.community.domain.dto.CommentDTO;
 import com.odop.community.domain.dto.PostDTO;
+import com.odop.community.domain.dto.PostDetailDTO;
 import com.odop.community.domain.dto.PostsDTO;
+import com.odop.community.domain.entity.Comment;
+import com.odop.community.domain.entity.Post;
 import com.odop.community.repository.PostRepository;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.util.FileCopyUtils;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -42,23 +49,44 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public PostsDTO findAll() {
-        return new PostsDTO(postRepository.selectAll());
+    public PostsDTO findAll() throws IOException {
+        List<Post> postList = postRepository.selectAll();
+
+        for (Post post : postList) {
+            if (!post.getImage().equals("")) {
+                Path imagePath = Paths.get(POST_IMAGE_DIRECTORY + post.getImage());
+                String image = Files.readString(imagePath, StandardCharsets.UTF_8);
+                post.setImage(image);
+            }
+        }
+
+        PostsDTO postsDTO = new PostsDTO(postRepository.selectAll());
+
+        return postsDTO;
+    }
+
+
+    @Override
+    @Transactional(isolation = Isolation.SERIALIZABLE)
+    public PostDetailDTO findById(PostDTO postDTO) {
+        Post post = postRepository.selectById(postDTO.convertToPostEntity());
+
+        if (post == null) {
+            throw new RuntimeException("Post not found");
+        }
+
+
+        List<Comment> comments = postRepository.selectAllComments(postDTO);
+        return new PostDetailDTO(post, comments);
     }
 
     @Override
-
-    public PostDTO findById() {
-        return null;
-    }
-
-    @Override
-    public void modify() {
+    public void modify(PostDTO postDTO) {
 
     }
 
     @Override
-    public void delete() {
+    public void delete(PostDTO postDTO) {
 
     }
 
@@ -73,7 +101,7 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public void deleteComment(Long id) {
+    public void deleteComment(CommentDTO commentDTO) {
 
     }
 }

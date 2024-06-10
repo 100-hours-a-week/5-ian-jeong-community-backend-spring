@@ -1,6 +1,6 @@
 package com.odop.community.controller;
 
-import com.odop.community.domain.ResponseMessage;
+import com.odop.community.domain.ResponseData;
 import com.odop.community.domain.dto.UserDTO;
 import com.odop.community.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -24,15 +24,15 @@ public class UserControllerImpl implements UserController {
 
     @Override
     @GetMapping("/email")
-    public ResponseEntity<ResponseMessage<Boolean>> validateEmail(@RequestParam(value="email") String email) {
+    public ResponseEntity<ResponseData<Boolean>> validateEmail(@RequestParam(value="email") String email) {
         UserDTO userDTO = new UserDTO();
         userDTO.setEmail(email);
 
         try {
             boolean result = userService.validateDuplicatedEmail(userDTO);
-            ResponseMessage<Boolean> responseMessage = new ResponseMessage<>(result);
+            ResponseData<Boolean> responseData = new ResponseData<>(result);
 
-            return new ResponseEntity<>(responseMessage,HttpStatus.OK);
+            return new ResponseEntity<>(responseData,HttpStatus.OK);
         } catch (DataAccessResourceFailureException e) {
             log.error("Error validating email = {}", e.getMessage());
 
@@ -42,15 +42,15 @@ public class UserControllerImpl implements UserController {
 
     @Override
     @GetMapping("/nickname")
-    public ResponseEntity<ResponseMessage<Boolean>> validateNickname(@RequestParam(value="nickname") String nickname) {
+    public ResponseEntity<ResponseData<Boolean>> validateNickname(@RequestParam(value="nickname") String nickname) {
         UserDTO userDTO = new UserDTO();
         userDTO.setNickname(nickname);
 
         try {
             boolean result = userService.validateDuplicatedNickname(userDTO);
-            ResponseMessage<Boolean> responseMessage = new ResponseMessage<>(result);
+            ResponseData<Boolean> responseData = new ResponseData<>(result);
 
-            return new ResponseEntity<>(responseMessage, HttpStatus.OK);
+            return new ResponseEntity<>(responseData, HttpStatus.OK);
         } catch(DataAccessResourceFailureException e) {
             log.error("Error validating password = {}", e.getMessage());
             e.printStackTrace();
@@ -106,14 +106,14 @@ public class UserControllerImpl implements UserController {
 
     @Override
     @GetMapping("/{userId}")
-    public ResponseEntity<ResponseMessage<UserDTO>> findById(@PathVariable("userId") Long id) {
+    public ResponseEntity<ResponseData<UserDTO>> findById(@PathVariable("userId") Long id) {
         UserDTO userDTO = new UserDTO(id, null, null, null, null);
 
         try {
             userDTO = userService.findById(userDTO);
-            ResponseMessage<UserDTO> responseMessage = new ResponseMessage<>(userDTO);
+            ResponseData<UserDTO> responseData = new ResponseData<>(userDTO);
 
-            return new ResponseEntity<>(responseMessage, HttpStatus.OK);
+            return new ResponseEntity<>(responseData, HttpStatus.OK);
 
         } catch(EmptyResultDataAccessException e) {
             log.error("Error attempting to find a user by id = {}", e.getMessage());

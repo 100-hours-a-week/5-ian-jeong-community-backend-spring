@@ -97,7 +97,13 @@ public class PostRepositoryImpl implements PostRepository {
 
     @Override
     public void insertComment(Comment comment) {
-
+        try {
+            entityManager.persist(comment);
+        } catch(DataAccessException e) {
+            throw new DataAccessResourceFailureException("Error executing insert query", e);
+        } finally {
+            entityManager.close();
+        }
     }
 
     @Override

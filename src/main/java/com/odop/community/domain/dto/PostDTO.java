@@ -1,14 +1,10 @@
 package com.odop.community.domain.dto;
 
-
-import com.odop.community.domain.entity.Comment;
 import com.odop.community.domain.entity.Post;
-import com.odop.community.domain.entity.User;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Getter
 @Setter

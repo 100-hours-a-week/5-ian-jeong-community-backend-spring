@@ -6,12 +6,11 @@ import com.odop.community.domain.dto.PostDetailDTO;
 import com.odop.community.domain.dto.PostsDTO;
 import com.odop.community.domain.entity.Comment;
 import com.odop.community.domain.entity.Post;
-import com.odop.community.domain.entity.User;
 import com.odop.community.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.FileCopyUtils;
 
 import java.io.FileOutputStream;
@@ -111,7 +110,7 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public void addComment(CommentDTO commentDTO) {
-
+        postRepository.insertComment(commentDTO.convertToEntity());
     }
 
     @Override

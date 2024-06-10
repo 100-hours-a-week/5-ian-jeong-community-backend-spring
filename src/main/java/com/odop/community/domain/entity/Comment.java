@@ -46,5 +46,15 @@ public class Comment {
 
     public Comment() {}
 
-
+    public Comment(
+            Long id,
+            Long postId,
+            Long userId,
+            String content
+    ) {
+        this.id = id;
+        this.postId = postId;
+        this.userId = userId;
+        this.content = content;
+    }
 }

@@ -1,11 +1,6 @@
 package com.odop.community.domain.dto;
 
-
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import lombok.AllArgsConstructor;
+import com.odop.community.domain.entity.Comment;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -14,16 +9,30 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
-@Entity
-@AllArgsConstructor
 public class CommentDTO {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private Long postId;
     private Long userId;
     private String content;
     private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
-    private LocalDateTime deletedAt;
+
+    public CommentDTO() {}
+
+    public CommentDTO(
+        Long id,
+        Long postId,
+        Long userId,
+        String content,
+        LocalDateTime createdAt
+    ) {
+        this.id = id;
+        this.postId = postId;
+        this.userId = userId;
+        this.content = content;
+        this.createdAt = createdAt;
+    }
+
+    public Comment convertToEntity() {
+        return new Comment(id, postId, userId, content);
+    }
 }

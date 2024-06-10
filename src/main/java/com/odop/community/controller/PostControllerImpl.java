@@ -28,7 +28,6 @@ public class PostControllerImpl implements PostController {
     @Override
     @PostMapping
     public ResponseEntity<Void> add(@RequestBody PostDTO postDTO) {
-
         try {
             postService.add(postDTO);
             return new ResponseEntity<>(HttpStatus.CREATED);
@@ -133,19 +132,32 @@ public class PostControllerImpl implements PostController {
 
     @Override
     @PostMapping("/{postId}/comments")
-    public ResponseEntity<Void> addComment(@RequestBody CommentDTO commentDTO) {
-        return null;
+    public ResponseEntity<Void> addComment(@PathVariable("postId") Long postId, @RequestBody CommentDTO commentDTO) {
+        commentDTO.setPostId(postId);
+        try {
+            postService.addComment(commentDTO);
+            return new ResponseEntity<>(HttpStatus.CREATED);
+
+        } catch (DataAccessResourceFailureException e) {
+            log.error("Error attempting to add a comment = {}", e.getMessage());
+            e.printStackTrace();
+
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @Override
     @PostMapping("/{postId}/comments/{commentId}")
     public ResponseEntity<Void> modifyComment(Long id, String text) {
+        // pathvariable 어노테이션 ㄱㄱ
+
         return null;
     }
 
     @Override
     @DeleteMapping("/{postId}/comments/{commentId}")
     public ResponseEntity<Void> deleteComment(Long id) {
+        // pathvariable 어노테이션 ㄱㄱ
         return null;
     }
 }

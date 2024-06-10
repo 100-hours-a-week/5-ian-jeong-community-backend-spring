@@ -94,7 +94,7 @@ public class UserServiceImpl implements UserService {
 
         if (!userDTO.getImage().equals("")) {
             Path imagePath = Paths.get(USER_IMAGE_DIRECTORY + user.getImage()); // 기존 path 에 저장
-            System.out.println(imagePath);
+
             try (OutputStream outputStream = new FileOutputStream(imagePath.toFile())) {
                 FileCopyUtils.copy(userDTO.getImage().getBytes(), outputStream);
 

@@ -10,6 +10,7 @@ import com.odop.community.service.PostService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessResourceFailureException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -90,15 +91,44 @@ public class PostControllerImpl implements PostController {
 
     @Override
     @PatchMapping("/{postId}")
-    public ResponseEntity<Void> modify(@RequestBody PostDTO postDTO) {
+    public ResponseEntity<Void> modify(@PathVariable("postId") Long id, @RequestBody PostDTO postDTO) {
+        postDTO.setId(id);
+        try {
+            postService.modify(postDTO);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 
-        return null;
+        } catch(EmptyResultDataAccessException e) {
+            log.error("Error attempting to find a post by id = {}", e.getMessage());
+            e.printStackTrace();
+
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } catch (DataAccessResourceFailureException e) {
+            log.error("Error attempting to find a post by id = {}", e.getMessage());
+            e.printStackTrace();
+
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch(IOException e) {
+            log.error("Error attempting to save image = {}", e.getMessage());
+            e.printStackTrace();
+
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @Override
     @DeleteMapping("/{postId}")
-    public ResponseEntity<Void> delete(@PathVariable("postId") Long id) {
-        return null;
+    public ResponseEntity<Void> remove(@PathVariable("postId") Long id) {
+        try {
+            PostDTO postDTO = new PostDTO(id, null, null, null, null, null, null);
+            postService.remove(postDTO);
+
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        } catch (DataAccessResourceFailureException e) {
+            log.error("Error attempting to delete a post by id = {}", e.getMessage());
+            e.printStackTrace();
+
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @Override

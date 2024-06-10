@@ -13,6 +13,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
@@ -68,12 +69,30 @@ public class PostRepositoryImpl implements PostRepository {
 
     @Override
     public void update(Post post) {
+        try {
+            jpaQueryFactory.update(qPost)
+                    .where(qPost.id.eq(post.getId()))
+                    .set(qPost.title, post.getTitle())
+                    .set(qPost.content, post.getContent())
+                    .set(qPost.image, post.getImage())
+                    .set(qPost.imageName, post.getImageName())
+                    .execute();
 
+        } catch (DataAccessException e) {
+            throw new DataAccessResourceFailureException("Error executing update query", e);
+        }
     }
 
     @Override
     public void delete(Post post) {
-
+        try {
+            jpaQueryFactory.update(qPost)
+                    .where(qPost.id.eq(post.getId()))
+                    .set(qPost.deletedAt, LocalDateTime.now())
+                    .execute();
+        } catch (DataAccessException e) {
+            throw new DataAccessResourceFailureException("Error executing delete query", e);
+        }
     }
 
     @Override

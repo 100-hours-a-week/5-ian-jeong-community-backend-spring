@@ -11,8 +11,8 @@ public interface PostService {
     void add(PostDTO postDTO) throws IOException;
     PostsDTO findAll() throws IOException;
     PostDetailDTO findById(PostDTO postDTO);
-    void modify(PostDTO postDTO);
-    void delete(PostDTO postDTO);
+    void modify(PostDTO postDTO) throws IOException;
+    void remove(PostDTO postDTO);
 
     void addComment(CommentDTO commentDTO);
     void updateComment(CommentDTO commentDTO);

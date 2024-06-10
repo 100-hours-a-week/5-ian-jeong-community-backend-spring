@@ -6,6 +6,7 @@ import com.odop.community.domain.dto.PostDetailDTO;
 import com.odop.community.domain.dto.PostsDTO;
 import com.odop.community.domain.entity.Comment;
 import com.odop.community.domain.entity.Post;
+import com.odop.community.domain.entity.User;
 import com.odop.community.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -81,13 +82,31 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public void modify(PostDTO postDTO) {
+    public void modify(PostDTO postDTO) throws IOException {
+        Post post = postDTO.convertToPostEntity();
+        post = postRepository.selectById(post);
 
+        if (!postDTO.getImage().equals("")) {
+            Path imagePath = Paths.get(POST_IMAGE_DIRECTORY + post.getImage());
+
+            try (OutputStream outputStream = new FileOutputStream(imagePath.toFile())) {
+                FileCopyUtils.copy(postDTO.getImage().getBytes(), outputStream);
+            } catch (IOException e) {
+                throw new IOException(e);
+            }
+
+        } else {
+            postDTO.setImage(null);
+            postDTO.setImageName(null);
+        }
+
+        postDTO.setImage(post.getImage());
+        postRepository.update(postDTO.convertToPostEntity());
     }
 
     @Override
-    public void delete(PostDTO postDTO) {
-
+    public void remove(PostDTO postDTO) {
+        postRepository.delete(postDTO.convertToPostEntity());
     }
 
     @Override

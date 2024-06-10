@@ -14,8 +14,8 @@ public interface PostController {
     ResponseEntity<Void> add(PostDTO postDTO);
     ResponseEntity<ResponseData<List<Post>>> findAll();
     ResponseEntity<ResponseData<PostDetailDTO>> findById(Long id);
-    ResponseEntity<Void> modify(PostDTO postDTO);
-    ResponseEntity<Void> delete(Long id);
+    ResponseEntity<Void> modify(Long id, PostDTO postDTO);
+    ResponseEntity<Void> remove(Long id);
 
     ResponseEntity<Void> addComment(CommentDTO commentDTO);
     ResponseEntity<Void> modifyComment(Long id, String text);

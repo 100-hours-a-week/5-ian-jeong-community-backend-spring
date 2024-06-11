@@ -1,4 +1,4 @@
-package com.odop.community.config;
+package com.odop.community.config.ratelimit;
 
 import io.github.bucket4j.Bucket;
 import jakarta.servlet.http.HttpServletRequest;

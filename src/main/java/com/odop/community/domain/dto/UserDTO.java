@@ -29,6 +29,10 @@ public class UserDTO {
         this.image = image;
     }
 
+    public UserDTO(Long id) {
+        this.id = id;
+    }
+
     public User convertToUserEntity() {
         return new User(id, email, password, nickname, image);
     }

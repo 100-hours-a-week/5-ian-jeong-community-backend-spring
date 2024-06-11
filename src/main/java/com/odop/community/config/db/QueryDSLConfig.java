@@ -1,4 +1,4 @@
-package com.odop.community.config;
+package com.odop.community.config.db;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
@@ -15,6 +15,4 @@ public class QueryDSLConfig {
     public JPAQueryFactory jpaQueryFactory() {
         return new JPAQueryFactory(entityManager);
     }
-
-
 }

@@ -1,4 +1,4 @@
-package com.odop.community.config;
+package com.odop.community.config.db;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.jdbc.DataSourceBuilder;

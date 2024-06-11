@@ -1,135 +1,97 @@
 package com.odop.community.controller;
 
-import com.odop.community.domain.ResponseData;
 import com.odop.community.domain.dto.UserDTO;
 import com.odop.community.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
-import java.util.Optional;
+
+import static com.odop.community.util.ResponseHandler.handleException;
+import static com.odop.community.util.ResponseHandler.handleResponse;
 
 @Slf4j
 @RestController
 @RequestMapping("/users")
 @RequiredArgsConstructor
 public class UserControllerImpl implements UserController {
+    private static final String ERROR_EMAIL_VALIDATION = "Email validation = {}";
+    private static final String ERROR_PASSWORD_VALIDATION = "Password validation = {}";
+    private static final String ERROR_JOIN = "Attempt to join = {}";
+    private static final String ERROR_SIGN_IN = "Attempt to sign in = {}";
+    private static final String ERROR_FIND_USER = "Attempt to find the user = {}";
+    private static final String ERROR_STORE_IMAGE = "Attempt to store image = {}";
+    private static final String ERROR_LOAD_IMAGE = "Attempt to load image = {}";
+    private static final String ERROR_MODIFY_USER = "Attempt to modify the user = {}";
+    private static final String ERROR_DELETE_USER = "Attempt to delete the user = {}";
+
     private final UserService userService;
 
     @Override
     @GetMapping("/email")
-    public ResponseEntity<ResponseData<Boolean>> validateEmail(@RequestParam(value="email") String email) {
-        UserDTO userDTO = new UserDTO();
-        userDTO.setEmail(email);
-
+    public ResponseEntity<?> validateEmail(@ModelAttribute UserDTO userDTO) {
         try {
-            boolean result = userService.validateDuplicatedEmail(userDTO);
-            ResponseData<Boolean> responseData = new ResponseData<>(result);
+            return handleResponse(userService.validateDuplicatedEmail(userDTO), HttpStatus.OK);
 
-            return new ResponseEntity<>(responseData,HttpStatus.OK);
         } catch (DataAccessResourceFailureException e) {
-            log.error("Error validating email = {}", e.getMessage());
-
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            return handleException(e, ERROR_EMAIL_VALIDATION, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     @Override
     @GetMapping("/nickname")
-    public ResponseEntity<ResponseData<Boolean>> validateNickname(@RequestParam(value="nickname") String nickname) {
-        UserDTO userDTO = new UserDTO();
-        userDTO.setNickname(nickname);
-
+    public ResponseEntity<?> validateNickname(@ModelAttribute UserDTO userDTO) {
         try {
-            boolean result = userService.validateDuplicatedNickname(userDTO);
-            ResponseData<Boolean> responseData = new ResponseData<>(result);
+            return handleResponse(userService.validateDuplicatedNickname(userDTO), HttpStatus.OK);
 
-            return new ResponseEntity<>(responseData, HttpStatus.OK);
         } catch(DataAccessResourceFailureException e) {
-            log.error("Error validating password = {}", e.getMessage());
-            e.printStackTrace();
-
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            return handleException(e, ERROR_PASSWORD_VALIDATION, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     @Override
     @PostMapping
-    public ResponseEntity<Void> join(@RequestBody UserDTO userDTO) {
+    public ResponseEntity<?> join(@RequestBody UserDTO userDTO) {
         try {
             userService.join(userDTO);
-            return new ResponseEntity<>(HttpStatus.CREATED);
+            return handleResponse(HttpStatus.CREATED);
 
         } catch (DataAccessResourceFailureException e) {
-            log.error("Error attempting to sign up = {}", e.getMessage());
-            e.printStackTrace();
-
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            return handleException(e, ERROR_JOIN, HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (IOException e) {
-            log.error("Error attempting to save image = {}", e.getMessage());
-            e.printStackTrace();
-
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            return handleException(e, ERROR_STORE_IMAGE, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-
-
     @Override
     @PostMapping("/sign-in")
-    public ResponseEntity<Void> validateAccount(@RequestBody UserDTO userDTO) {
+    public ResponseEntity<?> validateAccount(@RequestBody UserDTO userDTO) {
         try {
-            Optional<String> token = userService.validateAccount(userDTO);
-
-            if (token.isEmpty()) {
-                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-            }
-
-            HttpHeaders headers = new HttpHeaders();
-            headers.add(HttpHeaders.AUTHORIZATION, "Bearer " + token.get());
-
-            return ResponseEntity.ok().headers(headers).build();
+            return handleResponse(userService.validateAccount(userDTO));
 
         } catch (DataAccessResourceFailureException e) {
-            log.error("Error attempting to sign in = {}", e.getMessage());
-            e.printStackTrace();
-
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            return handleException(e, ERROR_SIGN_IN, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     @Override
     @GetMapping("/{userId}")
-    public ResponseEntity<ResponseData<UserDTO>> findById(@PathVariable("userId") Long id) {
-        UserDTO userDTO = new UserDTO(id, null, null, null, null);
-
+    public ResponseEntity<?> findById(@PathVariable("userId") Long id) {
         try {
-            userDTO = userService.findById(userDTO);
-            ResponseData<UserDTO> responseData = new ResponseData<>(userDTO);
-
-            return new ResponseEntity<>(responseData, HttpStatus.OK);
+            UserDTO userDTO = new UserDTO(id);
+            return handleResponse(userService.findById(userDTO), HttpStatus.OK);
 
         } catch(EmptyResultDataAccessException e) {
-            log.error("Error attempting to find a user by id = {}", e.getMessage());
-            e.printStackTrace();
-
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return handleException(e, ERROR_FIND_USER, HttpStatus.NOT_FOUND);
         } catch (DataAccessResourceFailureException e) {
-            log.error("Error attempting to find a user by id = {}", e.getMessage());
-            e.printStackTrace();
-
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            return handleException(e, ERROR_FIND_USER, HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (IOException e) {
-            log.error("Error attempting to read image = {}", e.getMessage());
-            e.printStackTrace();
-
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            return handleException(e, ERROR_LOAD_IMAGE, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -137,61 +99,44 @@ public class UserControllerImpl implements UserController {
 
     @Override
     @PatchMapping("/{userId}")
-    public ResponseEntity<Void> modify(@PathVariable("userId") Long id, @RequestBody UserDTO userDTO) {
-        userDTO.setId(id);
-
+    public ResponseEntity<?> modify(@PathVariable("userId") Long id, @RequestBody UserDTO userDTO) {
         try {
+            userDTO.setId(id);
             userService.modify(userDTO);
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            return handleResponse(HttpStatus.NO_CONTENT);
+
         } catch(EmptyResultDataAccessException e) {
-            log.error("Error attempting to find a user by id = {}", e.getMessage());
-            e.printStackTrace();
-
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return handleException(e, ERROR_FIND_USER, HttpStatus.NOT_FOUND);
         } catch (DataAccessResourceFailureException e) {
-            log.error("Error attempting to find a user by id = {}", e.getMessage());
-            e.printStackTrace();
-
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            return handleException(e, ERROR_FIND_USER, HttpStatus.INTERNAL_SERVER_ERROR);
         } catch(IOException e) {
-            log.error("Error attempting to save image = {}", e.getMessage());
-            e.printStackTrace();
-
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            return handleException(e, ERROR_STORE_IMAGE, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     @Override
     @PatchMapping("/{userId}/password")
-    public ResponseEntity<Void> modifyPassword(@PathVariable("userId") Long id, @RequestBody UserDTO userDTO) {
-        userDTO.setId(id);
-
+    public ResponseEntity<?> modifyPassword(@PathVariable("userId") Long id, @RequestBody UserDTO userDTO) {
         try {
+            userDTO.setId(id);
             userService.modifyPassword(userDTO);
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        } catch (DataAccessResourceFailureException e) {
-            log.error("Error attempting to find a user by id = {}", e.getMessage());
-            e.printStackTrace();
+            return handleResponse(HttpStatus.NO_CONTENT);
 
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (DataAccessResourceFailureException e) {
+            return handleException(e, ERROR_MODIFY_USER, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     @Override
     @DeleteMapping("/{userId}")
-    public ResponseEntity<Void> withdraw(@PathVariable("userId") Long id) {
+    public ResponseEntity<?> withdraw(@PathVariable("userId") Long id) {
         try {
-            UserDTO userDTO = new UserDTO();
-            userDTO.setId(id);
+            UserDTO userDTO = new UserDTO(id);
             userService.withdraw(userDTO);
+            return handleResponse(HttpStatus.NO_CONTENT);
 
         } catch (DataAccessResourceFailureException e) {
-            log.error("Error attempting to delete a user by id = {}", e.getMessage());
-            e.printStackTrace();
-
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            return handleException(e, ERROR_DELETE_USER, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

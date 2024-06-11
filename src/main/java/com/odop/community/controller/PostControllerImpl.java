@@ -7,6 +7,7 @@ import com.odop.community.domain.dto.PostsDTO;
 import com.odop.community.domain.ResponseData;
 import com.odop.community.domain.entity.Post;
 import com.odop.community.service.PostService;
+import com.odop.community.util.ResponseHandler;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessResourceFailureException;
@@ -24,6 +25,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class PostControllerImpl implements PostController {
     private final PostService postService;
+    private final ResponseHandler responseHandler;
 
     @Override
     @PostMapping

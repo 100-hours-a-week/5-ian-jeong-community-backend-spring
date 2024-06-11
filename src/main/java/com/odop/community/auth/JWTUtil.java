@@ -1,6 +1,7 @@
 package com.odop.community.auth;
 
 import io.jsonwebtoken.Jwts;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
@@ -10,10 +11,13 @@ import java.util.Date;
 
 @Component
 public class JWTUtil {
-    private static Long EXPIRED_TIME = 1000 * 60 * 60 * 24L;
-    private static String SECRET = "testSecretKey20230327testSecretKey20230327testSecretKey20230327";
+    @Value("${expired.time}")
+    private static Long expiredTime;
 
-    private SecretKey secretKey = new SecretKeySpec(SECRET.getBytes(StandardCharsets.UTF_8),
+    @Value("${secret.key}")
+    private String secret;
+
+    private SecretKey secretKey = new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8),
                 Jwts.SIG.HS256.key().build().getAlgorithm());
 
     public String getNickname(String token) {
@@ -45,7 +49,7 @@ public class JWTUtil {
 
                 .claim("nickname", nickname)
                 .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + EXPIRED_TIME))
+                .expiration(new Date(System.currentTimeMillis() + expiredTime))
                 .signWith(secretKey)
                 .compact();
     }

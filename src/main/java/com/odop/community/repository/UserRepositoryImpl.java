@@ -44,8 +44,8 @@ public class UserRepositoryImpl implements UserRepository {
                     user.getImage()
             );
 
-        } catch(DataAccessException e) {
-            throw new DataAccessResourceFailureException("Error executing insert query", e);
+        } catch(RuntimeException e) {
+            throw new RuntimeException("Query to insert new user failed => [" + user.getEmail() + "]", e);
         }
     }
 
@@ -54,20 +54,20 @@ public class UserRepositoryImpl implements UserRepository {
         try {
             return jdbcTemplate.query(SELECT_ALL, BeanPropertyRowMapper.newInstance(User.class));
 
-        } catch (DataAccessException e) {
-            throw new DataAccessResourceFailureException("Error executing selectAll query", e);
+        } catch (RuntimeException e) {
+            throw new RuntimeException("Query to select all users failed", e);
         }
     }
 
     @Override
-    public User selectById(User user) throws EmptyResultDataAccessException{
+    public User selectById(User user) {
         try {
             return jdbcTemplate.queryForObject(SELECT_BY_ID, BeanPropertyRowMapper.newInstance(User.class), user.getId());
 
         } catch (EmptyResultDataAccessException e) {
-            throw new EmptyResultDataAccessException("No user found with ID: " + user.getId(), 1, e);
-        } catch(DataAccessException e) {
-            throw new DataAccessResourceFailureException("Error executing selectById query", e);
+            throw new EmptyResultDataAccessException("User with id not found => [" + user.getId() + "]", 1, e);
+        } catch(RuntimeException e) {
+            throw new RuntimeException("Query to select a user failed", e);
         }
     }
 
@@ -81,8 +81,8 @@ public class UserRepositoryImpl implements UserRepository {
                     user.getId()
             );
 
-        } catch (DataAccessException e) {
-            throw new DataAccessResourceFailureException("Error executing update query", e);
+        } catch (RuntimeException e) {
+            throw new RuntimeException("Query to update a user failed", e);
         }
     }
 
@@ -95,8 +95,8 @@ public class UserRepositoryImpl implements UserRepository {
                     user.getId()
             );
 
-        } catch (DataAccessException e) {
-            throw new DataAccessResourceFailureException("Error executing update query", e);
+        } catch (RuntimeException e) {
+            throw new RuntimeException("Query to update a user's password failed", e);
         }
     }
 
@@ -105,8 +105,8 @@ public class UserRepositoryImpl implements UserRepository {
         try {
             jdbcTemplate.update(DELETE, user.getId());
 
-        } catch (DataAccessException e) {
-            throw new DataAccessResourceFailureException("Error executing delete query", e);
+        } catch (RuntimeException e) {
+            throw new RuntimeException("Query to delete a user failed", e);
         }
     }
 }

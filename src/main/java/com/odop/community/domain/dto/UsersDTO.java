@@ -1,7 +1,8 @@
 package com.odop.community.domain.dto;
 
 import com.odop.community.domain.entity.User;
-import com.odop.community.service.UserServiceImpl;
+import com.odop.community.functional.PasswordValidator;
+import com.odop.community.service.user.UserServiceImpl;
 
 import java.util.List;
 
@@ -32,7 +33,7 @@ public class UsersDTO {
         return true;
     }
 
-    public Long validateAccount(UserDTO userDTO, UserServiceImpl.PasswordValidator passwordValidator) {
+    public Long validateAccount(UserDTO userDTO, PasswordValidator passwordValidator) {
         for (User user : users) {
             if (user.getEmail().equals(userDTO.getEmail())) {
                 if (passwordValidator.validate(userDTO.getPassword(), user.getPassword())) {

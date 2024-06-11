@@ -1,8 +1,8 @@
-package com.odop.community.controller;
+package com.odop.community.controller.post;
 
 import com.odop.community.domain.dto.CommentDTO;
 import com.odop.community.domain.dto.PostDTO;
-import com.odop.community.service.PostService;
+import com.odop.community.service.post.PostService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.EmptyResultDataAccessException;

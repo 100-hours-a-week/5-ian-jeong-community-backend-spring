@@ -1,4 +1,4 @@
-package com.odop.community.service;
+package com.odop.community.service.post;
 
 import com.odop.community.domain.dto.CommentDTO;
 import com.odop.community.domain.dto.PostDTO;
@@ -6,7 +6,8 @@ import com.odop.community.domain.dto.PostDetailDTO;
 import com.odop.community.domain.dto.PostsDTO;
 import com.odop.community.domain.entity.Comment;
 import com.odop.community.domain.entity.Post;
-import com.odop.community.repository.PostRepository;
+import com.odop.community.repository.post.PostRepository;
+import com.odop.community.service.post.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;

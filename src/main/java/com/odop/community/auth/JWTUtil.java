@@ -49,8 +49,8 @@ public class JWTUtil {
                 .before(new Date());
     }
 
-    public String createJwt(Long id) {
-        return Jwts.builder()
+    public JWTToken createJwt(Long id) {
+        String accessToken = Jwts.builder()
                 .header()
                 .add("typ", "JWT")
                 .and()
@@ -60,18 +60,18 @@ public class JWTUtil {
                 .expiration(new Date(System.currentTimeMillis() + expiredTime))
                 .signWith(secretKey)
                 .compact();
-    }
 
-    public String createRefreshToken(Long id) {
-        return Jwts.builder()
+        String refreshToken =  Jwts.builder()
                 .header()
                 .add("typ", "JWT")
                 .and()
 
                 .claim("id", id)
                 .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + expiredTime))
+                .expiration(new Date(System.currentTimeMillis() + refreshExpiredTime))
                 .signWith(secretKey)
                 .compact();
+
+        return new JWTToken(accessToken, refreshToken);
     }
 }

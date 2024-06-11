@@ -1,4 +1,4 @@
-package com.odop.community.config;
+package com.odop.community.config.security;
 
 import com.odop.community.auth.JWTFilter;
 import io.github.bucket4j.Bandwidth;
@@ -50,7 +50,8 @@ public class SecurityConfig {
 
                 .authorizeHttpRequests((requests) -> {
                     requests.requestMatchers(
-                                    "/users/sign-in",
+                                    "/auth/sign-in",
+                                    "/auth/refresh-token",
                                     "/users/sign-up",
                                     "/users/email",
                                     "/users/nickname",

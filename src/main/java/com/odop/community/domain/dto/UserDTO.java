@@ -1,7 +1,7 @@
 package com.odop.community.domain.dto;
 
 import com.odop.community.domain.entity.User;
-import com.odop.community.service.UserServiceImpl;
+import com.odop.community.functional.Encoder;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -34,7 +34,7 @@ public class UserDTO {
         this.id = id;
     }
 
-    public void encodePassword(UserServiceImpl.Encoder encoder) {
+    public void encodePassword(Encoder encoder) {
         encoder.encode(password);
     }
 

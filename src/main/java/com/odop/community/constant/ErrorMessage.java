@@ -19,6 +19,9 @@ public class ErrorMessage {
     public static final String ERROR_MODIFY_COMMENT = "Attempt to modify the comment = {}";
     public static final String ERROR_DELETE_COMMENT = "Attempt to delete the comment = {}";
 
+    public static final String ERROR_AUTH = "Unauthenticated user = {}";
+    public static final String ERROR_RUNTIME = "Unexpected runtime exception = {}";
+
     public static final String ERROR_STORE_IMAGE = "Attempt to store image = {}";
     public static final String ERROR_LOAD_IMAGE = "Attempt to load image = {}";
 }

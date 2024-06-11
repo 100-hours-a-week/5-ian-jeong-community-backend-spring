@@ -1,4 +1,4 @@
-package com.odop.community.controller;
+package com.odop.community.controller.post;
 
 import com.odop.community.domain.dto.CommentDTO;
 import com.odop.community.domain.dto.PostDTO;

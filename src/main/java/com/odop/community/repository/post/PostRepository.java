@@ -1,4 +1,4 @@
-package com.odop.community.repository;
+package com.odop.community.repository.post;
 
 import com.odop.community.domain.dto.PostDTO;
 import com.odop.community.domain.entity.Comment;

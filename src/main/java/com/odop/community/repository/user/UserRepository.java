@@ -1,4 +1,4 @@
-package com.odop.community.repository;
+package com.odop.community.repository.user;
 
 import com.odop.community.domain.entity.User;
 

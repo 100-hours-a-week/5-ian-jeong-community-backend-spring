@@ -1,7 +1,7 @@
-package com.odop.community.controller;
+package com.odop.community.controller.user;
 
 import com.odop.community.domain.dto.UserDTO;
-import com.odop.community.service.UserService;
+import com.odop.community.service.user.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -54,17 +54,6 @@ public class UserControllerImpl implements UserController {
             return handleException(e, ERROR_JOIN, HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (IOException e) {
             return handleException(e, ERROR_STORE_IMAGE, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    @Override
-    @PostMapping("/sign-in")
-    public ResponseEntity<?> validateAccount(@RequestBody UserDTO userDTO) {
-        try {
-            return handleResponse(userService.validateAccount(userDTO), HttpStatus.CREATED);
-
-        } catch (RuntimeException e) {
-            return handleException(e, ERROR_SIGN_IN, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

@@ -1,10 +1,11 @@
-package com.odop.community.repository;
+package com.odop.community.repository.post;
 
 import com.odop.community.domain.dto.PostDTO;
 import com.odop.community.domain.entity.Comment;
 import com.odop.community.domain.entity.Post;
 import com.odop.community.domain.entity.QComment;
 import com.odop.community.domain.entity.QPost;
+import com.odop.community.repository.post.PostRepository;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;

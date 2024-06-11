@@ -1,10 +1,9 @@
-package com.odop.community.service;
+package com.odop.community.service.user;
 
-import com.odop.community.auth.JWTUtil;
 import com.odop.community.domain.dto.UserDTO;
 import com.odop.community.domain.dto.UsersDTO;
 import com.odop.community.domain.entity.User;
-import com.odop.community.repository.UserRepository;
+import com.odop.community.repository.user.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -18,7 +17,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -29,7 +27,6 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final JWTUtil jwtUtil;
 
     @Override
     public boolean validateDuplicatedEmail(UserDTO userDTO) {
@@ -48,19 +45,6 @@ public class UserServiceImpl implements UserService {
         storeUserImage(userDTO);
         userDTO.encodePassword(passwordEncoder::encode);
         userRepository.insert(userDTO.convertToUserEntity());
-    }
-
-    @Override
-    public Optional<String> validateAccount(UserDTO userDTO) {
-        UsersDTO usersDTO = new UsersDTO(userRepository.selectAll());
-        Long id = usersDTO.validateAccount(userDTO, passwordEncoder::matches);
-
-        if(id != 0) {
-            String token = jwtUtil.createJwt(id);
-            return Optional.of(token);
-        }
-
-        return Optional.empty();
     }
 
     @Override
@@ -88,20 +72,6 @@ public class UserServiceImpl implements UserService {
     @Override
     public void withdraw(UserDTO userDTO) {
         userRepository.delete(userDTO.convertToUserEntity());
-    }
-
-
-
-
-
-    @FunctionalInterface
-    public interface PasswordValidator {
-        boolean validate(String rawPassword, String encodedPassword);
-    }
-
-    @FunctionalInterface
-    public interface Encoder {
-        void encode(String password);
     }
 
     private void storeUserImage(UserDTO userDTO) throws IOException {

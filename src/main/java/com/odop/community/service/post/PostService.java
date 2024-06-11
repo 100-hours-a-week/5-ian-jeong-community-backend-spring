@@ -1,4 +1,4 @@
-package com.odop.community.service;
+package com.odop.community.service.post;
 
 import com.odop.community.domain.dto.CommentDTO;
 import com.odop.community.domain.dto.PostDTO;

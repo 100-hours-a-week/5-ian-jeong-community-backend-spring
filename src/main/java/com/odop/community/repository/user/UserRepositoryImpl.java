@@ -1,6 +1,7 @@
-package com.odop.community.repository;
+package com.odop.community.repository.user;
 
 import com.odop.community.domain.entity.User;
+import com.odop.community.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;

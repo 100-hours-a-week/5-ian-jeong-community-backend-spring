@@ -1,4 +1,4 @@
-package com.odop.community.config;
+package com.odop.community.config.security;
 
 import com.odop.community.config.ratelimit.RateLimitInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;

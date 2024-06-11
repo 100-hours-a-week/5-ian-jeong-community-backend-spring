@@ -1,5 +1,6 @@
 package com.odop.community.util;
 
+import com.odop.community.auth.JWTToken;
 import com.odop.community.domain.ResponseData;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
@@ -25,13 +26,16 @@ public class ResponseHandler {
         return new ResponseEntity<>(status);
     }
 
-    public static ResponseEntity<Void> handleResponse(Optional<String> token) {
+    public static ResponseEntity<Void> handleResponse(Optional<JWTToken> token) {
         if (token.isEmpty()) {
-            return handleResponse(HttpStatus.UNAUTHORIZED);
+            throw new IllegalArgumentException();
         }
 
+        JWTToken jwtToken = token.get();
+
         HttpHeaders headers = new HttpHeaders();
-        headers.add(HttpHeaders.AUTHORIZATION, "Bearer " + token.get());
+        headers.add(HttpHeaders.AUTHORIZATION, "Bearer " + jwtToken.accessToken());
+        headers.add("RefreshToken", "Bearer " + jwtToken.refreshToken());
 
         return ResponseEntity.ok().headers(headers).build();
     }

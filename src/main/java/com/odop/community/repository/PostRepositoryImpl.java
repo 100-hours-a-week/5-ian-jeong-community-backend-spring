@@ -9,8 +9,6 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
-import org.springframework.dao.DataAccessException;
-import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Repository;
 
@@ -68,7 +66,7 @@ public class PostRepositoryImpl implements PostRepository {
         } catch (EmptyResultDataAccessException e) {
             throw new EmptyResultDataAccessException("Post with id not found => [" + post.getId() + "]", 1, e);
         } catch (RuntimeException e) {
-            throw new RuntimeException("Query to select a post", e);
+            throw new RuntimeException("Query to select a post failed", e);
         }
     }
 
@@ -84,7 +82,7 @@ public class PostRepositoryImpl implements PostRepository {
                     .execute();
 
         } catch (RuntimeException e) {
-            throw new RuntimeException("Error executing update query", e);
+            throw new RuntimeException("Query to update post failed", e);
         }
     }
 
@@ -96,7 +94,7 @@ public class PostRepositoryImpl implements PostRepository {
                     .set(qPost.deletedAt, LocalDateTime.now())
                     .execute();
         } catch (RuntimeException e) {
-            throw new RuntimeException("Error executing delete query", e);
+            throw new RuntimeException("Query to delete post failed", e);
         }
     }
 
@@ -105,7 +103,7 @@ public class PostRepositoryImpl implements PostRepository {
         try {
             entityManager.persist(comment);
         } catch(RuntimeException e) {
-            throw new RuntimeException("Error executing insert query", e);
+            throw new RuntimeException("Query to insert comment failed", e);
         } finally {
             entityManager.close();
         }
@@ -120,7 +118,7 @@ public class PostRepositoryImpl implements PostRepository {
                     .fetch();
 
         } catch(RuntimeException e) {
-            throw new RuntimeException("Error executing select query", e);
+            throw new RuntimeException("Query to select comment failed", e);
         }
     }
 
@@ -133,7 +131,7 @@ public class PostRepositoryImpl implements PostRepository {
                     .execute();
 
         } catch (RuntimeException e) {
-            throw new RuntimeException("Error executing update query", e);
+            throw new RuntimeException("Query to update comment failed", e);
         }
     }
 
@@ -144,8 +142,9 @@ public class PostRepositoryImpl implements PostRepository {
                     .where(qComment.id.eq(comment.getId()))
                     .set(qComment.deletedAt, LocalDateTime.now())
                     .execute();
+
         } catch (RuntimeException e) {
-            throw new RuntimeException("Error executing delete query", e);
+            throw new RuntimeException("Query to delete comment failed", e);
         }
     }
 }

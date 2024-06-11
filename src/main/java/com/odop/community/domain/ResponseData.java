@@ -20,6 +20,7 @@ public class ResponseData<T> {
 
             return;
         }
+
         this.result = result;
     }
 }

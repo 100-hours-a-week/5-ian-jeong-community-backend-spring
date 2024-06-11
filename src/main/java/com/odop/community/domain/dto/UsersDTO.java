@@ -32,15 +32,15 @@ public class UsersDTO {
         return true;
     }
 
-    public boolean validateAccount(UserDTO userDTO, UserServiceImpl.PasswordValidator passwordValidator) {
+    public Long validateAccount(UserDTO userDTO, UserServiceImpl.PasswordValidator passwordValidator) {
         for (User user : users) {
             if (user.getEmail().equals(userDTO.getEmail())) {
                 if (passwordValidator.validate(userDTO.getPassword(), user.getPassword())) {
-                    return true;
+                    return user.getId();
                 }
             }
         }
 
-        return false;
+        return 0L;
     }
 }

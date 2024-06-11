@@ -61,7 +61,7 @@ public class UserControllerImpl implements UserController {
     @PostMapping("/sign-in")
     public ResponseEntity<?> validateAccount(@RequestBody UserDTO userDTO) {
         try {
-            return handleResponse(userService.validateAccount(userDTO));
+            return handleResponse(userService.validateAccount(userDTO), HttpStatus.CREATED);
 
         } catch (RuntimeException e) {
             return handleException(e, ERROR_SIGN_IN, HttpStatus.INTERNAL_SERVER_ERROR);

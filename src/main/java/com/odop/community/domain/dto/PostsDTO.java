@@ -14,5 +14,4 @@ public class PostsDTO {
     public List<Post> getList() {
         return postsDTO;
     }
-
 }

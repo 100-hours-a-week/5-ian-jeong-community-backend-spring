@@ -53,9 +53,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public Optional<String> validateAccount(UserDTO userDTO) {
         UsersDTO usersDTO = new UsersDTO(userRepository.selectAll());
+        Long id = usersDTO.validateAccount(userDTO, passwordEncoder::matches);
 
-        if(usersDTO.validateAccount(userDTO, passwordEncoder::matches)) {
-            String token = jwtUtil.createJwt(userDTO.getNickname());
+        if(id != 0) {
+            String token = jwtUtil.createJwt(id);
             return Optional.of(token);
         }
 

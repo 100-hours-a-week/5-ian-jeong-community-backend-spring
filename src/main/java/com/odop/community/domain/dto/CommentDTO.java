@@ -22,20 +22,6 @@ public class CommentDTO {
         this.id = id;
     }
 
-    public CommentDTO(
-        Long id,
-        Long postId,
-        Long userId,
-        String content,
-        LocalDateTime createdAt
-    ) {
-        this.id = id;
-        this.postId = postId;
-        this.userId = userId;
-        this.content = content;
-        this.createdAt = createdAt;
-    }
-
     public Comment convertToEntity() {
         return new Comment(id, postId, userId, content);
     }

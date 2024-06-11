@@ -1,6 +1,7 @@
 package com.odop.community.domain.dto;
 
 import com.odop.community.domain.entity.User;
+import com.odop.community.service.UserServiceImpl;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -31,6 +32,10 @@ public class UserDTO {
 
     public UserDTO(Long id) {
         this.id = id;
+    }
+
+    public void encodePassword(UserServiceImpl.Encoder encoder) {
+        encoder.encode(password);
     }
 
     public User convertToUserEntity() {

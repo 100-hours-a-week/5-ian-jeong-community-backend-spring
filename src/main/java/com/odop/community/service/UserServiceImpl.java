@@ -34,32 +34,19 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean validateDuplicatedEmail(UserDTO userDTO) {
         UsersDTO usersDTO = new UsersDTO(userRepository.selectAll());
-
         return usersDTO.validateDuplicatedEmail(userDTO.getEmail());
     }
 
     @Override
     public boolean validateDuplicatedNickname(UserDTO userDTO) {
         UsersDTO usersDTO = new UsersDTO(userRepository.selectAll());
-
         return usersDTO.validateDuplicatedNickname(userDTO.getNickname());
     }
 
     @Override
     public void join(UserDTO userDTO) throws IOException {
-        if (!userDTO.getImage().equals("")) {
-            String imageName = UUID.randomUUID().toString();
-            Path imagePath = Paths.get(USER_IMAGE_DIRECTORY + imageName);
-
-            try (OutputStream outputStream = new FileOutputStream(imagePath.toFile())) {
-                FileCopyUtils.copy(userDTO.getImage().getBytes(), outputStream);
-                userDTO.setImage(imageName);
-            } catch (IOException e) {
-                throw new IOException(e);
-            }
-        }
-
-        userDTO.setPassword(passwordEncoder.encode(userDTO.getPassword()));
+        storeUserImage(userDTO);
+        userDTO.encodePassword(passwordEncoder::encode);
         userRepository.insert(userDTO.convertToUserEntity());
     }
 
@@ -78,38 +65,22 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDTO findById(UserDTO userDTO) throws IOException {
         User user = userRepository.selectById(userDTO.convertToUserEntity());
-        if (!user.getImage().equals("")) {
-            Path imagePath = Paths.get(USER_IMAGE_DIRECTORY + user.getImage());
-            String image = Files.readString(imagePath, StandardCharsets.UTF_8);
-            user.setImage(image);
-        }
+        loadUserImage(user);
 
         return UserDTO.convertToUserDTO(user);
     }
 
     @Override
     public void modify(UserDTO userDTO) throws IOException {
-        User user = userDTO.convertToUserEntity();
-        user = userRepository.selectById(user);
+        User user = userRepository.selectById(userDTO.convertToUserEntity());
+        updateUserImage(userDTO, user);
 
-        if (!userDTO.getImage().equals("")) {
-            Path imagePath = Paths.get(USER_IMAGE_DIRECTORY + user.getImage()); // 기존 path 에 저장
-
-            try (OutputStream outputStream = new FileOutputStream(imagePath.toFile())) {
-                FileCopyUtils.copy(userDTO.getImage().getBytes(), outputStream);
-
-            } catch (IOException e) {
-                throw new IOException(e);
-            }
-        }
-
-        userDTO.setImage(user.getImage());
         userRepository.update(userDTO.convertToUserEntity());
     }
 
     @Override
     public void modifyPassword(UserDTO userDTO) {
-        userDTO.setPassword(passwordEncoder.encode(userDTO.getPassword()));
+        userDTO.encodePassword(passwordEncoder::encode);
         userRepository.updatePassword(userDTO.convertToUserEntity());
     }
 
@@ -118,8 +89,52 @@ public class UserServiceImpl implements UserService {
         userRepository.delete(userDTO.convertToUserEntity());
     }
 
+
+
+
+
     @FunctionalInterface
     public interface PasswordValidator {
         boolean validate(String rawPassword, String encodedPassword);
+    }
+
+    @FunctionalInterface
+    public interface Encoder {
+        void encode(String password);
+    }
+
+    private void storeUserImage(UserDTO userDTO) throws IOException {
+        if (!userDTO.getImage().isEmpty()) {
+            String imageName = UUID.randomUUID().toString();
+            Path imagePath = Paths.get(USER_IMAGE_DIRECTORY + imageName);
+
+            try (OutputStream outputStream = new FileOutputStream(imagePath.toFile())) {
+                FileCopyUtils.copy(userDTO.getImage().getBytes(), outputStream);
+                userDTO.setImage(imageName);
+            } catch (IOException e) {
+                throw new IOException(e);
+            }
+        }
+    }
+
+    private void loadUserImage(User user) throws IOException {
+        if (!user.getImage().isEmpty()) {
+            Path imagePath = Paths.get(USER_IMAGE_DIRECTORY + user.getImage());
+            String image = Files.readString(imagePath, StandardCharsets.UTF_8);
+            user.setImage(image);
+        }
+    }
+
+    private void updateUserImage(UserDTO userDTO, User user) throws IOException {
+        if (!userDTO.getImage().isEmpty()) {
+            Path imagePath = Paths.get(USER_IMAGE_DIRECTORY + user.getImage()); // 기존 path 에 저장
+
+            try (OutputStream outputStream = new FileOutputStream(imagePath.toFile())) {
+                FileCopyUtils.copy(userDTO.getImage().getBytes(), outputStream);
+                userDTO.setImage(user.getImage());
+            } catch (IOException e) {
+                throw new IOException(e);
+            }
+        }
     }
 }

@@ -38,7 +38,7 @@ public class UserControllerImpl implements UserController {
         try {
             return handleResponse(userService.validateDuplicatedEmail(userDTO), HttpStatus.OK);
 
-        } catch (DataAccessResourceFailureException e) {
+        } catch (RuntimeException e) {
             return handleException(e, ERROR_EMAIL_VALIDATION, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -49,7 +49,7 @@ public class UserControllerImpl implements UserController {
         try {
             return handleResponse(userService.validateDuplicatedNickname(userDTO), HttpStatus.OK);
 
-        } catch(DataAccessResourceFailureException e) {
+        } catch(RuntimeException e) {
             return handleException(e, ERROR_PASSWORD_VALIDATION, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -61,7 +61,7 @@ public class UserControllerImpl implements UserController {
             userService.join(userDTO);
             return handleResponse(HttpStatus.CREATED);
 
-        } catch (DataAccessResourceFailureException e) {
+        } catch (RuntimeException e) {
             return handleException(e, ERROR_JOIN, HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (IOException e) {
             return handleException(e, ERROR_STORE_IMAGE, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -74,7 +74,7 @@ public class UserControllerImpl implements UserController {
         try {
             return handleResponse(userService.validateAccount(userDTO));
 
-        } catch (DataAccessResourceFailureException e) {
+        } catch (RuntimeException e) {
             return handleException(e, ERROR_SIGN_IN, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -88,7 +88,7 @@ public class UserControllerImpl implements UserController {
 
         } catch(EmptyResultDataAccessException e) {
             return handleException(e, ERROR_FIND_USER, HttpStatus.NOT_FOUND);
-        } catch (DataAccessResourceFailureException e) {
+        } catch (RuntimeException e) {
             return handleException(e, ERROR_FIND_USER, HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (IOException e) {
             return handleException(e, ERROR_LOAD_IMAGE, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -107,7 +107,7 @@ public class UserControllerImpl implements UserController {
 
         } catch(EmptyResultDataAccessException e) {
             return handleException(e, ERROR_FIND_USER, HttpStatus.NOT_FOUND);
-        } catch (DataAccessResourceFailureException e) {
+        } catch (RuntimeException e) {
             return handleException(e, ERROR_FIND_USER, HttpStatus.INTERNAL_SERVER_ERROR);
         } catch(IOException e) {
             return handleException(e, ERROR_STORE_IMAGE, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -122,7 +122,7 @@ public class UserControllerImpl implements UserController {
             userService.modifyPassword(userDTO);
             return handleResponse(HttpStatus.NO_CONTENT);
 
-        } catch (DataAccessResourceFailureException e) {
+        } catch (RuntimeException e) {
             return handleException(e, ERROR_MODIFY_USER, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -135,7 +135,7 @@ public class UserControllerImpl implements UserController {
             userService.withdraw(userDTO);
             return handleResponse(HttpStatus.NO_CONTENT);
 
-        } catch (DataAccessResourceFailureException e) {
+        } catch (RuntimeException e) {
             return handleException(e, ERROR_DELETE_USER, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

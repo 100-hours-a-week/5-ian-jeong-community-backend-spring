@@ -19,6 +19,10 @@ public class PostDTO {
 
     public PostDTO() {}
 
+    public PostDTO(Long id) {
+        this.id = id;
+    }
+
     public PostDTO(
             Long id,
             Long userId,

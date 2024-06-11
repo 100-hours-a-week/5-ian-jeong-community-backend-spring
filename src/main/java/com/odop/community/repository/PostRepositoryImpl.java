@@ -11,10 +11,12 @@ import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataAccessResourceFailureException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
@@ -29,8 +31,8 @@ public class PostRepositoryImpl implements PostRepository {
     public void insert(Post post) {
         try {
             entityManager.persist(post);
-        } catch(DataAccessException e) {
-            throw new DataAccessResourceFailureException("Error executing insert query", e);
+        } catch(RuntimeException e) {
+            throw new RuntimeException("Query to insert new post failed => [" + post.getTitle() + "]", e);
         } finally {
             entityManager.close();
         }
@@ -44,26 +46,29 @@ public class PostRepositoryImpl implements PostRepository {
                     .where(qPost.deletedAt.isNull())
                     .orderBy(qPost.createdAt.desc())
                     .fetch();
-        } catch (DataAccessException e) {
-            throw new DataAccessResourceFailureException("Error executing select query", e);
+
+        } catch (RuntimeException e) {
+            throw new RuntimeException("Query to select posts failed", e);
         }
     }
 
     @Override
-    public Post selectById(Post post) {
+    public Optional<Post> selectById(Post post) {
         try {
             jpaQueryFactory.update(qPost)
                     .set(qPost.viewCount, qPost.viewCount.add(1))
                     .where(qPost.id.eq(post.getId()).and(qPost.deletedAt.isNull()))
                     .execute();
 
-
-            return jpaQueryFactory.selectFrom(qPost)
+            return Optional.ofNullable(jpaQueryFactory.selectFrom(qPost)
                     .where(qPost.id.eq(post.getId()).and(qPost.deletedAt.isNull()))
-                    .fetchOne();
+                    .fetchOne()
+            );
 
-        } catch (DataAccessException e) {
-            throw new DataAccessResourceFailureException("Error executing select query", e);
+        } catch (EmptyResultDataAccessException e) {
+            throw new EmptyResultDataAccessException("Post with id not found => [" + post.getId() + "]", 1, e);
+        } catch (RuntimeException e) {
+            throw new RuntimeException("Query to select a post", e);
         }
     }
 
@@ -78,8 +83,8 @@ public class PostRepositoryImpl implements PostRepository {
                     .set(qPost.imageName, post.getImageName())
                     .execute();
 
-        } catch (DataAccessException e) {
-            throw new DataAccessResourceFailureException("Error executing update query", e);
+        } catch (RuntimeException e) {
+            throw new RuntimeException("Error executing update query", e);
         }
     }
 
@@ -90,8 +95,8 @@ public class PostRepositoryImpl implements PostRepository {
                     .where(qPost.id.eq(post.getId()))
                     .set(qPost.deletedAt, LocalDateTime.now())
                     .execute();
-        } catch (DataAccessException e) {
-            throw new DataAccessResourceFailureException("Error executing delete query", e);
+        } catch (RuntimeException e) {
+            throw new RuntimeException("Error executing delete query", e);
         }
     }
 
@@ -99,8 +104,8 @@ public class PostRepositoryImpl implements PostRepository {
     public void insertComment(Comment comment) {
         try {
             entityManager.persist(comment);
-        } catch(DataAccessException e) {
-            throw new DataAccessResourceFailureException("Error executing insert query", e);
+        } catch(RuntimeException e) {
+            throw new RuntimeException("Error executing insert query", e);
         } finally {
             entityManager.close();
         }
@@ -114,8 +119,8 @@ public class PostRepositoryImpl implements PostRepository {
                     .orderBy(qComment.createdAt.desc())
                     .fetch();
 
-        } catch(DataAccessException e) {
-            throw new DataAccessResourceFailureException("Error executing select query", e);
+        } catch(RuntimeException e) {
+            throw new RuntimeException("Error executing select query", e);
         }
     }
 
@@ -127,8 +132,8 @@ public class PostRepositoryImpl implements PostRepository {
                     .set(qComment.content, comment.getContent())
                     .execute();
 
-        } catch (DataAccessException e) {
-            throw new DataAccessResourceFailureException("Error executing update query", e);
+        } catch (RuntimeException e) {
+            throw new RuntimeException("Error executing update query", e);
         }
     }
 
@@ -139,8 +144,8 @@ public class PostRepositoryImpl implements PostRepository {
                     .where(qComment.id.eq(comment.getId()))
                     .set(qComment.deletedAt, LocalDateTime.now())
                     .execute();
-        } catch (DataAccessException e) {
-            throw new DataAccessResourceFailureException("Error executing delete query", e);
+        } catch (RuntimeException e) {
+            throw new RuntimeException("Error executing delete query", e);
         }
     }
 }

@@ -8,6 +8,7 @@ import com.odop.community.domain.entity.Comment;
 import com.odop.community.domain.entity.Post;
 import com.odop.community.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,75 +34,48 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public void add(PostDTO postDTO) throws IOException {
-        if (!postDTO.getImage().equals("")) {
-            String imageName = UUID.randomUUID().toString();
-            Path imagePath = Paths.get(POST_IMAGE_DIRECTORY + imageName);
-
-            try (OutputStream outputStream = new FileOutputStream(imagePath.toFile())) {
-                FileCopyUtils.copy(postDTO.getImage().getBytes(), outputStream);
-                postDTO.setImage(imageName);
-            } catch (IOException e) {
-                throw new IOException(e);
-            }
-        }
-
+        storePostImage(postDTO);
         postRepository.insert(postDTO.convertToPostEntity());
     }
 
     @Override
     public PostsDTO findAll() throws IOException {
-        List<Post> postList = postRepository.selectAll();
+        List<Post> posts = postRepository.selectAll();
 
-        for (Post post : postList) {
-            if (!post.getImage().equals("")) {
-                Path imagePath = Paths.get(POST_IMAGE_DIRECTORY + post.getImage());
-                String image = Files.readString(imagePath, StandardCharsets.UTF_8);
-                post.setImage(image);
-            }
+        for (Post post : posts) {
+            loadPostImage(post);
         }
 
-        PostsDTO postsDTO = new PostsDTO(postRepository.selectAll());
-
-        return postsDTO;
+        return new PostsDTO(posts);
     }
 
 
     @Override
     @Transactional(isolation = Isolation.SERIALIZABLE)
-    public PostDetailDTO findById(PostDTO postDTO) {
-        Post post = postRepository.selectById(postDTO.convertToPostEntity());
+    public PostDetailDTO findById(PostDTO postDTO) throws IOException {
+        Post post = postRepository.selectById(postDTO.convertToPostEntity())
+                .orElseThrow(() ->
+                        new EmptyResultDataAccessException("Post with id not found => [" + postDTO.getId() + "]", 1, new Exception())
+                );
 
-        if (post == null) {
-            throw new RuntimeException("Post not found");
-        }
-
-
+        loadPostImage(post);
         List<Comment> comments = postRepository.selectAllComments(postDTO);
+
         return new PostDetailDTO(post, comments);
     }
 
     @Override
     public void modify(PostDTO postDTO) throws IOException {
-        Post post = postDTO.convertToPostEntity();
-        post = postRepository.selectById(post);
+        Post post = postRepository.selectById(postDTO.convertToPostEntity())
+                .orElseThrow(() ->
+                        new EmptyResultDataAccessException("Post with id not found => [" + postDTO.getId() + "]", 1, new Exception())
+                );
 
-        if (!postDTO.getImage().equals("")) {
-            Path imagePath = Paths.get(POST_IMAGE_DIRECTORY + post.getImage());
-
-            try (OutputStream outputStream = new FileOutputStream(imagePath.toFile())) {
-                FileCopyUtils.copy(postDTO.getImage().getBytes(), outputStream);
-            } catch (IOException e) {
-                throw new IOException(e);
-            }
-
-        } else {
-            postDTO.setImage(null);
-            postDTO.setImageName(null);
-        }
-
+        updatePostImage(postDTO, post);
         postDTO.setImage(post.getImage());
         postRepository.update(postDTO.convertToPostEntity());
     }
+
 
     @Override
     public void remove(PostDTO postDTO) {
@@ -121,5 +95,47 @@ public class PostServiceImpl implements PostService {
     @Override
     public void removeComment(CommentDTO commentDTO) {
         postRepository.deleteComment(commentDTO.convertToEntity());
+    }
+
+
+
+
+
+    private void storePostImage(PostDTO postDTO) throws IOException {
+        if (!postDTO.getImage().isEmpty()) {
+            String imageName = UUID.randomUUID().toString();
+            Path imagePath = Paths.get(POST_IMAGE_DIRECTORY + imageName);
+
+            try (OutputStream outputStream = new FileOutputStream(imagePath.toFile())) {
+                FileCopyUtils.copy(postDTO.getImage().getBytes(), outputStream);
+                postDTO.setImage(imageName);
+            } catch (IOException e) {
+                throw new IOException(e);
+            }
+        }
+    }
+
+    private void loadPostImage(Post post) throws IOException {
+        if (!post.getImage().isEmpty()) {
+            Path imagePath = Paths.get(POST_IMAGE_DIRECTORY + post.getImage());
+            String image = Files.readString(imagePath, StandardCharsets.UTF_8);
+            post.setImage(image);
+        }
+    }
+
+    private void updatePostImage(PostDTO postDTO, Post post) throws IOException {
+        if (!postDTO.getImage().equals("")) {
+            Path imagePath = Paths.get(POST_IMAGE_DIRECTORY + post.getImage());
+
+            try (OutputStream outputStream = new FileOutputStream(imagePath.toFile())) {
+                FileCopyUtils.copy(postDTO.getImage().getBytes(), outputStream);
+            } catch (IOException e) {
+                throw new IOException(e);
+            }
+
+        } else {
+            postDTO.setImage(null);
+            postDTO.setImageName(null);
+        }
     }
 }

@@ -18,6 +18,10 @@ public class CommentDTO {
 
     public CommentDTO() {}
 
+    public CommentDTO(Long id) {
+        this.id = id;
+    }
+
     public CommentDTO(
         Long id,
         Long postId,

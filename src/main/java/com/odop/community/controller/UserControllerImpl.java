@@ -4,7 +4,6 @@ import com.odop.community.domain.dto.UserDTO;
 import com.odop.community.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,24 +11,14 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 
-import static com.odop.community.util.ResponseHandler.handleException;
-import static com.odop.community.util.ResponseHandler.handleResponse;
+import static com.odop.community.constant.ErrorMessage.*;
+import static com.odop.community.util.ResponseHandler.*;
 
 @Slf4j
 @RestController
 @RequestMapping("/users")
 @RequiredArgsConstructor
 public class UserControllerImpl implements UserController {
-    private static final String ERROR_EMAIL_VALIDATION = "Email validation = {}";
-    private static final String ERROR_PASSWORD_VALIDATION = "Password validation = {}";
-    private static final String ERROR_JOIN = "Attempt to join = {}";
-    private static final String ERROR_SIGN_IN = "Attempt to sign in = {}";
-    private static final String ERROR_FIND_USER = "Attempt to find the user = {}";
-    private static final String ERROR_STORE_IMAGE = "Attempt to store image = {}";
-    private static final String ERROR_LOAD_IMAGE = "Attempt to load image = {}";
-    private static final String ERROR_MODIFY_USER = "Attempt to modify the user = {}";
-    private static final String ERROR_DELETE_USER = "Attempt to delete the user = {}";
-
     private final UserService userService;
 
     @Override

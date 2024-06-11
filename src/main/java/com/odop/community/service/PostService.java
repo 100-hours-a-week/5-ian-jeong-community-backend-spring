@@ -10,7 +10,7 @@ import java.io.IOException;
 public interface PostService {
     void add(PostDTO postDTO) throws IOException;
     PostsDTO findAll() throws IOException;
-    PostDetailDTO findById(PostDTO postDTO);
+    PostDetailDTO findById(PostDTO postDTO) throws IOException;
     void modify(PostDTO postDTO) throws IOException;
     void remove(PostDTO postDTO);
 

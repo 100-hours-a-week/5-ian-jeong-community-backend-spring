@@ -7,8 +7,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import java.util.Optional;
-
 @Slf4j
 public class ResponseHandler {
 
@@ -26,16 +24,10 @@ public class ResponseHandler {
         return new ResponseEntity<>(status);
     }
 
-    public static ResponseEntity<Void> handleResponse(Optional<JWTToken> token) {
-        if (token.isEmpty()) {
-            throw new IllegalArgumentException();
-        }
-
-        JWTToken jwtToken = token.get();
-
+    public static ResponseEntity<Void> handleResponse(JWTToken token) {
         HttpHeaders headers = new HttpHeaders();
-        headers.add(HttpHeaders.AUTHORIZATION, "Bearer " + jwtToken.accessToken());
-        headers.add("RefreshToken", "Bearer " + jwtToken.refreshToken());
+        headers.set(HttpHeaders.AUTHORIZATION, "Bearer " + token.accessToken());
+        headers.set("RefreshToken", "Bearer " + token.refreshToken());
 
         return ResponseEntity.ok().headers(headers).build();
     }

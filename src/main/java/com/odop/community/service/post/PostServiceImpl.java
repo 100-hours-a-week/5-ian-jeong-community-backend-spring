@@ -7,7 +7,6 @@ import com.odop.community.domain.dto.PostsDTO;
 import com.odop.community.domain.entity.Comment;
 import com.odop.community.domain.entity.Post;
 import com.odop.community.repository.post.PostRepository;
-import com.odop.community.service.post.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
@@ -22,6 +21,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -42,12 +42,17 @@ public class PostServiceImpl implements PostService {
     @Override
     public PostsDTO findAll() throws IOException {
         List<Post> posts = postRepository.selectAll();
+        List<PostDTO> postsDTO = new ArrayList<>();
 
         for (Post post : posts) {
-            loadPostImage(post);
+            postsDTO.add(PostDTO.convertToPostDTO(post));
         }
 
-        return new PostsDTO(posts);
+        for (PostDTO postDTO : postsDTO) {
+            loadPostImage(postDTO);
+        }
+
+        return new PostsDTO(postsDTO);
     }
 
 
@@ -56,13 +61,19 @@ public class PostServiceImpl implements PostService {
     public PostDetailDTO findById(PostDTO postDTO) throws IOException {
         Post post = postRepository.selectById(postDTO.convertToPostEntity())
                 .orElseThrow(() ->
-                        new EmptyResultDataAccessException("Post with id not found => [" + postDTO.getId() + "]", 1, new Exception())
+                        new EmptyResultDataAccessException("Post with id not found", 1, new Exception())
                 );
 
-        loadPostImage(post);
-        List<Comment> comments = postRepository.selectAllComments(postDTO);
+        postDTO = PostDTO.convertToPostDTO(post);
+        loadPostImage(postDTO);
+        List<Comment> comments = postRepository.selectAllComments(postDTO.convertToPostEntity());
+        List<CommentDTO> commentsDTO = new ArrayList<>();
 
-        return new PostDetailDTO(post, comments);
+        for (Comment comment : comments) {
+            commentsDTO.add(CommentDTO.convertToCommentDTO(comment));
+        }
+
+        return new PostDetailDTO(postDTO, commentsDTO);
     }
 
     @Override
@@ -116,16 +127,16 @@ public class PostServiceImpl implements PostService {
         }
     }
 
-    private void loadPostImage(Post post) throws IOException {
-        if (!post.getImage().isEmpty()) {
-            Path imagePath = Paths.get(POST_IMAGE_DIRECTORY + post.getImage());
+    private void loadPostImage(PostDTO postDTO) throws IOException {
+        if (!postDTO.getImage().isEmpty()) {
+            Path imagePath = Paths.get(POST_IMAGE_DIRECTORY + postDTO.getImage());
             String image = Files.readString(imagePath, StandardCharsets.UTF_8);
-            post.setImage(image);
+            postDTO.setImage(image);
         }
     }
 
     private void updatePostImage(PostDTO postDTO, Post post) throws IOException {
-        if (!postDTO.getImage().equals("")) {
+        if (!postDTO.getImage().isEmpty()) {
             Path imagePath = Paths.get(POST_IMAGE_DIRECTORY + post.getImage());
 
             try (OutputStream outputStream = new FileOutputStream(imagePath.toFile())) {

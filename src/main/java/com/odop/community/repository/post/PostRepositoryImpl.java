@@ -21,7 +21,8 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class PostRepositoryImpl implements PostRepository {
     @PersistenceContext
-    private EntityManager entityManager;
+    private final EntityManager entityManager;
+
     private final JPAQueryFactory jpaQueryFactory;
     private final QPost qPost = QPost.post;
     private final QComment qComment = QComment.comment;
@@ -111,10 +112,10 @@ public class PostRepositoryImpl implements PostRepository {
     }
 
     @Override
-    public List<Comment> selectAllComments(PostDTO postDTO) {
+    public List<Comment> selectAllComments(Post post) {
         try {
              return jpaQueryFactory.selectFrom(qComment)
-                    .where(qComment.postId.eq(postDTO.getId()).and(qComment.deletedAt.isNull()))
+                    .where(qComment.postId.eq(post.getId()).and(qComment.deletedAt.isNull()))
                     .orderBy(qComment.createdAt.desc())
                     .fetch();
 

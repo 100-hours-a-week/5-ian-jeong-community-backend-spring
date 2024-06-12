@@ -2,7 +2,6 @@ package com.odop.community.domain.dto;
 
 import com.odop.community.domain.entity.User;
 import com.odop.community.functional.PasswordValidator;
-import com.odop.community.service.user.UserServiceImpl;
 
 import java.util.List;
 

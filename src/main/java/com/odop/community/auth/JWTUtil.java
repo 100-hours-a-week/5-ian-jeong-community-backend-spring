@@ -13,7 +13,7 @@ import java.util.Date;
 @Component
 public class JWTUtil {
     @Value("${expired.time}")
-    private static Long expiredTime;
+    private Long expiredTime;
 
     @Value("${refresh.expired.time}")
     private Long refreshExpiredTime;
@@ -29,6 +29,10 @@ public class JWTUtil {
     }
 
     public Long getId(String token) {
+        if (token.startsWith("Bearer ")) {
+            token = token.substring(7);
+        }
+
         return Jwts
                 .parser()
                 .verifyWith(secretKey)
@@ -39,6 +43,10 @@ public class JWTUtil {
     }
 
     public boolean isExpired(String token) {
+        if (token.startsWith("Bearer ")) {
+            token = token.substring(7);  // "Bearer " 접두사 제거
+        }
+
         return Jwts
                 .parser()
                 .verifyWith(secretKey)
@@ -61,7 +69,7 @@ public class JWTUtil {
                 .signWith(secretKey)
                 .compact();
 
-        String refreshToken =  Jwts.builder()
+        String refreshToken = Jwts.builder()
                 .header()
                 .add("typ", "JWT")
                 .and()

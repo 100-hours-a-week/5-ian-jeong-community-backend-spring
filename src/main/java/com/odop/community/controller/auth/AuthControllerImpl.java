@@ -19,6 +19,17 @@ public class AuthControllerImpl implements AuthController {
     private final AuthService authService;
 
     @Override
+    @GetMapping
+    public ResponseEntity<?> getUserId(@RequestHeader("Authorization") String accessToken) {
+        try {
+            return handleResponse(authService.getUserId(accessToken), HttpStatus.OK);
+
+        } catch(IllegalArgumentException e) {
+            return handleException(e, ERROR_AUTH, HttpStatus.UNAUTHORIZED);
+        }
+    }
+
+    @Override
     @PostMapping("/sign-in")
     public ResponseEntity<?> validateAccount(@RequestBody UserDTO userDTO) {
         try {

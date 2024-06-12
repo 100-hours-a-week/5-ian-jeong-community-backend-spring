@@ -50,14 +50,14 @@ public class SecurityConfig {
 
                 .authorizeHttpRequests((requests) -> {
                     requests.requestMatchers(
-                                    "/auth/sign-in",
-                                    "/auth/refresh-token",
-                                    "/users/sign-up",
+                                    "/",
+                                    "/users",
                                     "/users/email",
                                     "/users/nickname",
-                                    "/users"
+                                    "/users/sign-up",
+                                    "/auth/sign-in",
+                                    "/auth/refresh-token"
                             ).permitAll()  // 인증없이 요청가능
-                            .requestMatchers(HttpMethod.GET, "/users").authenticated()
                             .anyRequest().authenticated();
                 })
 

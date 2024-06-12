@@ -29,13 +29,13 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
 
     @Override
-    public boolean validateDuplicatedEmail(UserDTO userDTO) {
+    public Boolean validateDuplicatedEmail(UserDTO userDTO) {
         UsersDTO usersDTO = new UsersDTO(userRepository.selectAll());
         return usersDTO.validateDuplicatedEmail(userDTO.getEmail());
     }
 
     @Override
-    public boolean validateDuplicatedNickname(UserDTO userDTO) {
+    public Boolean validateDuplicatedNickname(UserDTO userDTO) {
         UsersDTO usersDTO = new UsersDTO(userRepository.selectAll());
         return usersDTO.validateDuplicatedNickname(userDTO.getNickname());
     }

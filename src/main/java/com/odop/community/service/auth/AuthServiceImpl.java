@@ -19,25 +19,34 @@ public class AuthServiceImpl implements AuthService {
     private final JWTUtil jwtUtil;
 
     @Override
-    public Optional<JWTToken> validateAccount(UserDTO userDTO) {
+    public Long getUserId(String accessToken) {
+        System.out.println(accessToken);
+        if(jwtUtil.isExpired(accessToken)) {
+            throw new IllegalArgumentException();
+        }
+
+        return jwtUtil.getId(accessToken);
+    }
+
+    @Override
+    public JWTToken validateAccount(UserDTO userDTO) {
         UsersDTO usersDTO = new UsersDTO(userRepository.selectAll());
         Long id = usersDTO.validateAccount(userDTO, passwordEncoder::matches);
 
         if(id == 0) {
-            return Optional.empty();
+            throw  new IllegalArgumentException();
         }
 
-        JWTToken token = jwtUtil.createJwt(id);
-        return Optional.of(token);
+        return jwtUtil.createJwt(id);
     }
 
     @Override
-    public Optional<JWTToken> validateRefreshToken(String refreshToken, UserDTO userDTO) {
+    public JWTToken validateRefreshToken(String refreshToken, UserDTO userDTO) {
         if (jwtUtil.isExpired(refreshToken)) {
-            return Optional.empty();
+            throw  new IllegalArgumentException();
         }
 
         JWTToken token = jwtUtil.createJwt(userDTO.getId());
-        return Optional.of(token);
+        return token;
     }
 }

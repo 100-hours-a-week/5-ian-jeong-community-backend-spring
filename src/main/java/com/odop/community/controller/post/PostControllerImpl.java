@@ -41,7 +41,7 @@ public class PostControllerImpl implements PostController {
     @GetMapping
     public ResponseEntity<?> findAll() {
         try {
-            return handleResponse(postService.findAll(), HttpStatus.OK);
+            return handleResponse(postService.findAll().getList(), HttpStatus.OK);
 
         } catch(RuntimeException e) {
             return handleException(e, ERROR_FIND_POST, HttpStatus.INTERNAL_SERVER_ERROR);

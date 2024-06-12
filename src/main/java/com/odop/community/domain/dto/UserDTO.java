@@ -35,7 +35,7 @@ public class UserDTO {
     }
 
     public void encodePassword(Encoder encoder) {
-        encoder.encode(password);
+        password = encoder.encode(password);
     }
 
     public User convertToUserEntity() {
@@ -44,7 +44,7 @@ public class UserDTO {
 
     public static UserDTO convertToUserDTO(User user) {
         return new UserDTO(
-            user.getId(),
+                user.getId(),
                 user.getEmail(),
                 user.getPassword(),
                 user.getNickname(),

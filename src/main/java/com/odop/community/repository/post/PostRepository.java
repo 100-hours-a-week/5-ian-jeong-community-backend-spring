@@ -1,6 +1,5 @@
 package com.odop.community.repository.post;
 
-import com.odop.community.domain.dto.PostDTO;
 import com.odop.community.domain.entity.Comment;
 import com.odop.community.domain.entity.Post;
 
@@ -16,7 +15,7 @@ public interface PostRepository {
 
 
     void insertComment(Comment comment);
-    List<Comment> selectAllComments(PostDTO postDTO);
+    List<Comment> selectAllComments(Post post);
     void updateComment(Comment comment);
     void deleteComment(Comment comment);
 }

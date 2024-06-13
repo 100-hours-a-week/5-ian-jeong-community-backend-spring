@@ -1,7 +1,9 @@
 package com.odop.community.domain.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
@@ -9,6 +11,8 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name="users")
 public class User {
     @Id
@@ -47,8 +51,6 @@ public class User {
         this.updatedAt = LocalDateTime.now();
     }
 
-    public User() {}
-
     public User(
             Long id,
             String email,
@@ -61,25 +63,5 @@ public class User {
         this.password = password;
         this.nickname = nickname;
         this.image = image;
-    }
-
-    public User(
-            Long id,
-            String email,
-            String password,
-            String nickname,
-            String image,
-            LocalDateTime createdAt,
-            LocalDateTime updatedAt,
-            LocalDateTime deletedAt
-    ) {
-        this.id = id;
-        this.email = email;
-        this.password = password;
-        this.nickname = nickname;
-        this.image = image;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
-        this.deletedAt = deletedAt;
     }
 }

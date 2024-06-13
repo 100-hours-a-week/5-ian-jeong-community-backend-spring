@@ -1,7 +1,9 @@
 package com.odop.community.domain.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
@@ -9,6 +11,8 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name="posts")
 public class Post {
     @Id
@@ -58,8 +62,6 @@ public class Post {
         this.updatedAt = LocalDateTime.now();
     }
 
-    public Post() {}
-
     public Post(
             Long id,
             Long userId,
@@ -74,36 +76,5 @@ public class Post {
         this.content = content;
         this.imageName = imageName;
         this.image = image;
-        viewCount = 0L;
-        likeCount = 0L;
-        commentCount = 0L;
-    }
-
-    public Post(
-            Long id,
-            Long userId,
-            String title,
-            String content,
-            String imageName,
-            String image,
-            Long viewCount,
-            Long likeCount,
-            Long commentCount,
-            LocalDateTime createdAt,
-            LocalDateTime updatedAt,
-            LocalDateTime deletedAt
-    ) {
-        this.id = id;
-        this.userId = userId;
-        this.title = title;
-        this.content = content;
-        this.imageName = imageName;
-        this.image = image;
-        this.viewCount = viewCount;
-        this.likeCount = likeCount;
-        this.commentCount = commentCount;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
-        this.deletedAt = deletedAt;
     }
 }

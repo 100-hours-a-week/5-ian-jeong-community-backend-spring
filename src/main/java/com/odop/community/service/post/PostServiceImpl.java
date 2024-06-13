@@ -3,12 +3,13 @@ package com.odop.community.service.post;
 import com.odop.community.domain.dto.CommentDTO;
 import com.odop.community.domain.dto.PostDTO;
 import com.odop.community.domain.dto.PostDetailDTO;
-import com.odop.community.domain.dto.PostsDTO;
 import com.odop.community.domain.entity.Comment;
 import com.odop.community.domain.entity.Post;
+import com.odop.community.repository.comment.CommentRepository;
 import com.odop.community.repository.post.PostRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,81 +33,98 @@ public class PostServiceImpl implements PostService {
     private static final String POST_IMAGE_DIRECTORY = "src/main/resources/images/post/";
 
     private final PostRepository postRepository;
+    private final CommentRepository commentRepository;
 
     @Override
     public void add(PostDTO postDTO) throws IOException {
-        storePostImage(postDTO);
-        postRepository.insert(postDTO.convertToPostEntity());
+        try {
+            storePostImage(postDTO);
+            postRepository.save(postDTO.convertToEntity());
+        } catch (RuntimeException e) {
+            throw new RuntimeException("Query to insert comment failed", e);
+        }
     }
 
     @Override
-    public PostsDTO findAll() throws IOException {
-        List<Post> posts = postRepository.selectAll();
-        List<PostDTO> postsDTO = new ArrayList<>();
-
-        for (Post post : posts) {
-            postsDTO.add(PostDTO.convertToPostDTO(post));
+    public List<PostDTO> findAll() throws IOException {
+        try {
+            return convertToPostDTOList(postRepository.findAllByDeletedAtIsNull(Sort.by(Sort.Direction.DESC, "createdAt")));
+        } catch (RuntimeException e) {
+            throw new RuntimeException("Query to select posts failed", e);
         }
-
-        for (PostDTO postDTO : postsDTO) {
-            loadPostImage(postDTO);
-        }
-
-        return new PostsDTO(postsDTO);
     }
 
-
+    // querydsl 적용
     @Override
     @Transactional(isolation = Isolation.SERIALIZABLE)
-    public PostDetailDTO findById(PostDTO postDTO) throws IOException {
-        Post post = postRepository.selectById(postDTO.convertToPostEntity())
+    public PostDetailDTO findById(Long id) throws IOException {
+        postRepository.incrementViewCount(id);
+
+        Post post = postRepository.findByIdAndDeletedAtIsNull(id)
                 .orElseThrow(() ->
                         new EmptyResultDataAccessException("Post with id not found", 1, new Exception())
                 );
 
-        postDTO = PostDTO.convertToPostDTO(post);
+        PostDTO postDTO = PostDTO.convertToDTO(post);
         loadPostImage(postDTO);
-        List<Comment> comments = postRepository.selectAllComments(postDTO.convertToPostEntity());
-        List<CommentDTO> commentsDTO = new ArrayList<>();
-
-        for (Comment comment : comments) {
-            commentsDTO.add(CommentDTO.convertToCommentDTO(comment));
-        }
+        List<CommentDTO> commentsDTO = convertToCommentDTOList(commentRepository.findAllAndDeletedAtIsNull(id));
 
         return new PostDetailDTO(postDTO, commentsDTO);
     }
 
+
+
     @Override
-    public void modify(PostDTO postDTO) throws IOException {
-        Post post = postRepository.selectById(postDTO.convertToPostEntity())
+    public void modify(PostDTO postDTO) throws IOException { //여기서는 쿼리Dsl을 한 번 적용해보자
+        Post post = postRepository.findById(postDTO.getId())
                 .orElseThrow(() ->
                         new EmptyResultDataAccessException("Post with id not found => [" + postDTO.getId() + "]", 1, new Exception())
                 );
 
         updatePostImage(postDTO, post);
         postDTO.setImage(post.getImage());
-        postRepository.update(postDTO.convertToPostEntity());
+
+        try {
+            postRepository.save(postDTO.convertToEntity());
+        } catch (RuntimeException e) {
+            throw new RuntimeException("Query to update post failed", e);
+        }
     }
 
-
     @Override
-    public void remove(PostDTO postDTO) {
-        postRepository.delete(postDTO.convertToPostEntity());
+    public void remove(Long id) {
+        try {
+            postRepository.deleteById(id);
+        } catch (RuntimeException e) {
+            throw new RuntimeException("Query to delete post failed", e);
+        }
     }
 
     @Override
     public void addComment(CommentDTO commentDTO) {
-        postRepository.insertComment(commentDTO.convertToEntity());
+        try {
+            commentRepository.save(commentDTO.convertToEntity());
+        } catch (RuntimeException e) {
+            throw new RuntimeException("Query to insert comment failed", e);
+        }
     }
 
     @Override
     public void modifyComment(CommentDTO commentDTO) {
-        postRepository.updateComment(commentDTO.convertToEntity());
+        try {
+            commentRepository.save(commentDTO.convertToEntity());
+        } catch (RuntimeException e) {
+            throw new RuntimeException("Query to update comment failed", e);
+        }
     }
 
     @Override
-    public void removeComment(CommentDTO commentDTO) {
-        postRepository.deleteComment(commentDTO.convertToEntity());
+    public void removeComment(Long id) {
+        try {
+            commentRepository.deleteById(id);
+        } catch (RuntimeException e) {
+            throw new RuntimeException("Query to delete comment failed", e);
+        }
     }
 
 
@@ -149,5 +167,28 @@ public class PostServiceImpl implements PostService {
             postDTO.setImage(null);
             postDTO.setImageName(null);
         }
+    }
+
+    private List<PostDTO> convertToPostDTOList(List<Post> posts) throws IOException {
+        List<PostDTO> postsDTO = new ArrayList<>();
+
+        for (Post post : posts) {
+            postsDTO.add(PostDTO.convertToDTO(post));
+        }
+
+        for (PostDTO postDTO : postsDTO) {
+            loadPostImage(postDTO);
+        }
+
+        return postsDTO;
+    }
+
+    private List<CommentDTO> convertToCommentDTOList(List<Comment> comments) {
+        List<CommentDTO> commentsDTO = new ArrayList<>();
+
+        for (Comment comment : comments) {
+            commentsDTO.add(CommentDTO.convertToCommentDTO(comment));
+        }
+        return commentsDTO;
     }
 }

@@ -1,7 +1,9 @@
 package com.odop.community.domain.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
@@ -9,6 +11,8 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name="comments")
 public class Comment {
     @Id
@@ -43,8 +47,6 @@ public class Comment {
     protected void onUpdate() {
         this.updatedAt = LocalDateTime.now();
     }
-
-    public Comment() {}
 
     public Comment(
             Long id,

@@ -12,20 +12,21 @@ import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 
 import static com.odop.community.constant.ErrorMessage.*;
-import static com.odop.community.util.ResponseHandler.*;
+import static com.odop.community.response.ResponseHandler.*;
 
 @Slf4j
 @RestController
-@RequestMapping("/users")
 @RequiredArgsConstructor
+@RequestMapping("/users")
 public class UserControllerImpl implements UserController {
     private final UserService userService;
 
+
     @Override
     @GetMapping("/email")
-    public ResponseEntity<?> validateEmail(@ModelAttribute UserDTO userDTO) {
+    public ResponseEntity<?> validateEmail(@RequestParam("email") String email) {
         try {
-            return handleResponse(userService.validateDuplicatedEmail(userDTO), HttpStatus.OK);
+            return handleResponse(userService.validateDuplicatedEmail(email), HttpStatus.OK);
 
         } catch (RuntimeException e) {
             return handleException(e, ERROR_EMAIL_VALIDATION, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -34,9 +35,9 @@ public class UserControllerImpl implements UserController {
 
     @Override
     @GetMapping("/nickname")
-    public ResponseEntity<?> validateNickname(@ModelAttribute UserDTO userDTO) {
+    public ResponseEntity<?> validateNickname(@RequestParam("nickname") String nickname) {
         try {
-            return handleResponse(userService.validateDuplicatedNickname(userDTO), HttpStatus.OK);
+            return handleResponse(userService.validateDuplicatedNickname(nickname), HttpStatus.OK);
 
         } catch(RuntimeException e) {
             return handleException(e, ERROR_PASSWORD_VALIDATION, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -61,8 +62,7 @@ public class UserControllerImpl implements UserController {
     @GetMapping("/{userId}")
     public ResponseEntity<?> findById(@PathVariable("userId") Long id) {
         try {
-            UserDTO userDTO = new UserDTO(id);
-            return handleResponse(userService.findById(userDTO), HttpStatus.OK);
+            return handleResponse(userService.findById(id), HttpStatus.OK);
 
         } catch(EmptyResultDataAccessException e) {
             return handleException(e, ERROR_FIND_USER, HttpStatus.NOT_FOUND);
@@ -109,8 +109,7 @@ public class UserControllerImpl implements UserController {
     @DeleteMapping("/{userId}")
     public ResponseEntity<?> withdraw(@PathVariable("userId") Long id) {
         try {
-            UserDTO userDTO = new UserDTO(id);
-            userService.withdraw(userDTO);
+            userService.withdraw(id);
             return handleResponse(HttpStatus.NO_CONTENT);
 
         } catch (RuntimeException e) {

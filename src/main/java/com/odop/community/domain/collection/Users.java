@@ -1,14 +1,15 @@
-package com.odop.community.domain.dto;
+package com.odop.community.domain.collection;
 
+import com.odop.community.domain.dto.UserDTO;
 import com.odop.community.domain.entity.User;
 import com.odop.community.functional.PasswordValidator;
 
 import java.util.List;
 
-public class UsersDTO {
+public class Users {
     private final List<User> users;
 
-    public UsersDTO(List<User> users) {
+    public Users(List<User> users) {
         this.users = users;
     }
 

@@ -1,7 +1,7 @@
 package com.odop.community.service.user;
 
 import com.odop.community.domain.dto.UserDTO;
-import com.odop.community.domain.dto.UsersDTO;
+import com.odop.community.domain.collection.Users;
 import com.odop.community.domain.entity.User;
 import com.odop.community.repository.user.UserRepository;
 import jakarta.transaction.Transactional;
@@ -29,49 +29,49 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
 
     @Override
-    public Boolean validateDuplicatedEmail(UserDTO userDTO) {
-        UsersDTO usersDTO = new UsersDTO(userRepository.selectAll());
-        return usersDTO.validateDuplicatedEmail(userDTO.getEmail());
+    public Boolean validateDuplicatedEmail(String email) {
+        Users users = new Users(userRepository.selectAll());
+        return users.validateDuplicatedEmail(email);
     }
 
     @Override
-    public Boolean validateDuplicatedNickname(UserDTO userDTO) {
-        UsersDTO usersDTO = new UsersDTO(userRepository.selectAll());
-        return usersDTO.validateDuplicatedNickname(userDTO.getNickname());
+    public Boolean validateDuplicatedNickname(String nickname) {
+        Users users = new Users(userRepository.selectAll());
+        return users.validateDuplicatedNickname(nickname);
     }
 
     @Override
     public void join(UserDTO userDTO) throws IOException {
         storeUserImage(userDTO);
         userDTO.encodePassword(passwordEncoder::encode);
-        userRepository.insert(userDTO.convertToUserEntity());
+        userRepository.insert(userDTO.convertToEntity());
     }
 
     @Override
-    public UserDTO findById(UserDTO userDTO) throws IOException {
-        User user = userRepository.selectById(userDTO.convertToUserEntity());
+    public UserDTO findById(Long id) throws IOException {
+        User user = userRepository.selectById(id);
         loadUserImage(user);
 
-        return UserDTO.convertToUserDTO(user);
+        return UserDTO.convertToDTO(user);
     }
 
     @Override
     public void modify(UserDTO userDTO) throws IOException {
-        User user = userRepository.selectById(userDTO.convertToUserEntity());
+        User user = userRepository.selectById(userDTO.getId());
         updateUserImage(userDTO, user);
 
-        userRepository.update(userDTO.convertToUserEntity());
+        userRepository.update(userDTO.convertToEntity());
     }
 
     @Override
     public void modifyPassword(UserDTO userDTO) {
         userDTO.encodePassword(passwordEncoder::encode);
-        userRepository.updatePassword(userDTO.convertToUserEntity());
+        userRepository.updatePassword(userDTO.convertToEntity());
     }
 
     @Override
-    public void withdraw(UserDTO userDTO) {
-        userRepository.delete(userDTO.convertToUserEntity());
+    public void withdraw(Long id) {
+        userRepository.delete(id);
     }
 
     private void storeUserImage(UserDTO userDTO) throws IOException {

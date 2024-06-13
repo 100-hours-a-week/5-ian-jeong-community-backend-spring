@@ -3,13 +3,11 @@ package com.odop.community.service.auth;
 import com.odop.community.auth.JWTToken;
 import com.odop.community.auth.JWTUtil;
 import com.odop.community.domain.dto.UserDTO;
-import com.odop.community.domain.dto.UsersDTO;
+import com.odop.community.domain.collection.Users;
 import com.odop.community.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -30,8 +28,8 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public JWTToken validateAccount(UserDTO userDTO) {
-        UsersDTO usersDTO = new UsersDTO(userRepository.selectAll());
-        Long id = usersDTO.validateAccount(userDTO, passwordEncoder::matches);
+        Users users = new Users(userRepository.selectAll());
+        Long id = users.validateAccount(userDTO, passwordEncoder::matches);
 
         if(id == 0) {
             throw  new IllegalArgumentException();

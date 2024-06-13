@@ -9,7 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import static com.odop.community.constant.ErrorMessage.*;
-import static com.odop.community.util.ResponseHandler.*;
+import static com.odop.community.response.ResponseHandler.*;
 
 @Slf4j
 @RestController

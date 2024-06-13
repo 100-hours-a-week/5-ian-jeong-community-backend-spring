@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 
 import static com.odop.community.constant.ErrorMessage.*;
-import static com.odop.community.util.ResponseHandler.handleException;
-import static com.odop.community.util.ResponseHandler.handleResponse;
+import static com.odop.community.response.ResponseHandler.handleException;
+import static com.odop.community.response.ResponseHandler.handleResponse;
 
 @Slf4j
 @RestController
@@ -41,7 +41,7 @@ public class PostControllerImpl implements PostController {
     @GetMapping
     public ResponseEntity<?> findAll() {
         try {
-            return handleResponse(postService.findAll().getList(), HttpStatus.OK);
+            return handleResponse(postService.findAll(), HttpStatus.OK);
 
         } catch(RuntimeException e) {
             return handleException(e, ERROR_FIND_POST, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -54,8 +54,7 @@ public class PostControllerImpl implements PostController {
     @GetMapping("/{postId}")
     public ResponseEntity<?> findById(@PathVariable("postId") Long id) {
         try {
-            PostDTO postDTO = new PostDTO(id);
-            return handleResponse(postService.findById(postDTO), HttpStatus.OK);
+            return handleResponse(postService.findById(id), HttpStatus.OK);
 
         } catch(EmptyResultDataAccessException e) {
             return handleException(e, ERROR_FIND_POST, HttpStatus.NOT_FOUND);
@@ -89,8 +88,7 @@ public class PostControllerImpl implements PostController {
     @DeleteMapping("/{postId}")
     public ResponseEntity<?> remove(@PathVariable("postId") Long id) {
         try {
-            PostDTO postDTO = new PostDTO(id);
-            postService.remove(postDTO);
+            postService.remove(id);
             return handleResponse(HttpStatus.NO_CONTENT);
 
         } catch (RuntimeException e) {
@@ -138,8 +136,7 @@ public class PostControllerImpl implements PostController {
     @DeleteMapping("/{postId}/comments/{commentId}")
     public ResponseEntity<?> removeComment(@PathVariable("commentId") Long id) {
         try {
-            CommentDTO commentDTO = new CommentDTO(id);
-            postService.removeComment(commentDTO);
+            postService.removeComment(id);
             return handleResponse(HttpStatus.NO_CONTENT);
 
         } catch (RuntimeException e) {

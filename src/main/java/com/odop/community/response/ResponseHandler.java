@@ -1,7 +1,6 @@
-package com.odop.community.util;
+package com.odop.community.response;
 
 import com.odop.community.auth.JWTToken;
-import com.odop.community.domain.ResponseData;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;

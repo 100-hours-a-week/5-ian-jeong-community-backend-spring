@@ -1,7 +1,6 @@
 package com.odop.community.repository.user;
 
 import com.odop.community.domain.entity.User;
-import com.odop.community.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
@@ -19,13 +18,13 @@ public class UserRepositoryImpl implements UserRepository {
             "email, " +
             "password, " +
             "nickname, " +
-            "convert(image USING UTF8) as image, " +
+            "image, " +
             "DATE_FORMAT(created_at, '%Y-%m-%d %H:%i:%s') AS created_at, " +
             "DATE_FORMAT(updated_at, '%Y-%m-%d %H:%i:%s') AS updated_at, " +
             "DATE_FORMAT(deleted_at, '%Y-%m-%d %H:%i:%s') AS deleted_at " +
             "FROM users " +
             "WHERE deleted_at IS NULL";
-    private static final String SELECT_BY_ID = "SELECT id, email, password, nickname, convert(image USING UTF8) as image FROM users WHERE id = ? AND deleted_at IS NULL";
+    private static final String SELECT_BY_ID = "SELECT id, email, password, nickname, image FROM users WHERE id = ? AND deleted_at IS NULL";
     private static final String UPDATE = "UPDATE users SET nickname = ?, image = ? WHERE id = ? AND deleted_at IS NULL";
     private static final String UPDATE_PASSWORD = "UPDATE users SET password = ? WHERE id = ? AND deleted_at IS NULL";
     private static final String DELETE = "UPDATE users SET deleted_at = CURRENT_TIMESTAMP() WHERE id = ?";
@@ -59,12 +58,12 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public User selectById(User user) {
+    public User selectById(Long id) {
         try {
-            return jdbcTemplate.queryForObject(SELECT_BY_ID, BeanPropertyRowMapper.newInstance(User.class), user.getId());
+            return jdbcTemplate.queryForObject(SELECT_BY_ID, BeanPropertyRowMapper.newInstance(User.class), id);
 
         } catch (EmptyResultDataAccessException e) {
-            throw new EmptyResultDataAccessException("User with id not found => [" + user.getId() + "]", 1, e);
+            throw new EmptyResultDataAccessException("User with id not found => [" + id + "]", 1, e);
         } catch(RuntimeException e) {
             throw new RuntimeException("Query to select a user failed", e);
         }
@@ -100,9 +99,9 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public void delete(User user) {
+    public void delete(Long id) {
         try {
-            jdbcTemplate.update(DELETE, user.getId());
+            jdbcTemplate.update(DELETE, id);
 
         } catch (RuntimeException e) {
             throw new RuntimeException("Query to delete a user failed", e);

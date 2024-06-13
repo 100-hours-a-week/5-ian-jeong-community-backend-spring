@@ -21,7 +21,6 @@ import static com.odop.community.response.ResponseHandler.*;
 public class UserControllerImpl implements UserController {
     private final UserService userService;
 
-
     @Override
     @GetMapping("/email")
     public ResponseEntity<?> validateEmail(@RequestParam("email") String email) {

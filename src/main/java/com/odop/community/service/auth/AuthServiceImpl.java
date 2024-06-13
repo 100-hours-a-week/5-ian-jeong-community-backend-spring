@@ -18,7 +18,6 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public Long getUserId(String accessToken) {
-        System.out.println(accessToken);
         if(jwtUtil.isExpired(accessToken)) {
             throw new IllegalArgumentException();
         }
@@ -44,7 +43,6 @@ public class AuthServiceImpl implements AuthService {
             throw  new IllegalArgumentException();
         }
 
-        JWTToken token = jwtUtil.createJwt(userDTO.getId());
-        return token;
+        return jwtUtil.createJwt(userDTO.getId());
     }
 }

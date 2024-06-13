@@ -1,11 +1,8 @@
 package com.odop.community.repository.comment;
 
 import com.odop.community.domain.entity.Comment;
-import com.odop.community.domain.entity.Post;
 import com.odop.community.domain.entity.QComment;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 

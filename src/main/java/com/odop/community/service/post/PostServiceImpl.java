@@ -54,7 +54,7 @@ public class PostServiceImpl implements PostService {
         }
     }
 
-    // querydsl 적용
+
     @Override
     @Transactional(isolation = Isolation.SERIALIZABLE)
     public PostDetailDTO findById(Long id) throws IOException {

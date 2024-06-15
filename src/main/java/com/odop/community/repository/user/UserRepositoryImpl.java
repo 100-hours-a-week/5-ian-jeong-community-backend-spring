@@ -8,6 +8,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
@@ -25,6 +26,7 @@ public class UserRepositoryImpl implements UserRepository {
             "FROM users " +
             "WHERE deleted_at IS NULL";
     private static final String SELECT_BY_ID = "SELECT id, email, password, nickname, image FROM users WHERE id = ? AND deleted_at IS NULL";
+    private static final String SELECT_BY_NICKNAME = "SELECT id, email, password, nickname, image FROM users WHERE nickname = ? AND deleted_at IS NULL";
     private static final String UPDATE = "UPDATE users SET nickname = ?, image = ? WHERE id = ? AND deleted_at IS NULL";
     private static final String UPDATE_PASSWORD = "UPDATE users SET password = ? WHERE id = ? AND deleted_at IS NULL";
     private static final String DELETE = "UPDATE users SET deleted_at = CURRENT_TIMESTAMP() WHERE id = ?";
@@ -68,6 +70,19 @@ public class UserRepositoryImpl implements UserRepository {
             throw new RuntimeException("Query to select a user failed", e);
         }
     }
+
+    @Override
+    public Optional<User> findByNickname(String nickname) {
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(SELECT_BY_NICKNAME, BeanPropertyRowMapper.newInstance(User.class), nickname));
+
+        } catch (EmptyResultDataAccessException e) {
+            throw new EmptyResultDataAccessException("User with nickname not found => [" + nickname + "]", 1, e);
+        } catch(RuntimeException e) {
+            throw new RuntimeException("Query to select a user failed", e);
+        }
+    }
+
 
     @Override
     public void update(User user) {

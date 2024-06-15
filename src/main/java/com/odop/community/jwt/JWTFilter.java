@@ -1,20 +1,20 @@
-package com.odop.community.auth;
+package com.odop.community.jwt;
 
+import com.odop.community.domain.dto.UserDTO;
+import com.odop.community.domain.dto.auth.CustomOAuth2User;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.List;
 
 @Component
 @RequiredArgsConstructor
@@ -23,7 +23,14 @@ public class JWTFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        final String authorization = request.getHeader(HttpHeaders.AUTHORIZATION);
+        String authorization = null;
+        Cookie[] cookies = request.getCookies();
+
+        for (Cookie cookie : cookies) {
+            if (cookie.getName().equals("Authorization")) {
+                authorization = cookie.getValue();
+            }
+        }
 
         if(authorization == null || !authorization.startsWith("Bearer ")){
             filterChain.doFilter(request, response);
@@ -37,13 +44,14 @@ public class JWTFilter extends OncePerRequestFilter {
             return;
         }
 
-        Long id = jwtUtil.getId(token);
+        CustomOAuth2User customOAuth2User = new CustomOAuth2User(
+                UserDTO.builder()
+                        .id(jwtUtil.getId(token))
+                        .build()
+        );
 
-        UsernamePasswordAuthenticationToken authenticationToken =
-                new UsernamePasswordAuthenticationToken(id, null, List.of(new SimpleGrantedAuthority("USER")));
-
-        authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-        SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+        Authentication authToken = new UsernamePasswordAuthenticationToken(customOAuth2User, null, customOAuth2User.getAuthorities());
+        SecurityContextHolder.getContext().setAuthentication(authToken);
         filterChain.doFilter(request, response);
     }
 }

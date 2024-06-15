@@ -1,9 +1,11 @@
 package com.odop.community.service.auth;
 
-import com.odop.community.auth.JWTToken;
-import com.odop.community.auth.JWTUtil;
+import com.odop.community.domain.entity.RefreshToken;
+import com.odop.community.jwt.JWTToken;
+import com.odop.community.jwt.JWTUtil;
 import com.odop.community.domain.dto.UserDTO;
 import com.odop.community.domain.collection.Users;
+import com.odop.community.repository.auth.RefreshTokenRepository;
 import com.odop.community.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -13,6 +15,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
     private final UserRepository userRepository;
+    private final RefreshTokenRepository refreshTokenRepository;
     private final PasswordEncoder passwordEncoder;
     private final JWTUtil jwtUtil;
 
@@ -45,4 +48,11 @@ public class AuthServiceImpl implements AuthService {
 
         return jwtUtil.createJwt(userDTO.getId());
     }
+
+    @Override
+    public void saveRefreshToken(RefreshToken refreshToken) {
+        refreshTokenRepository.save(refreshToken);
+    }
+
+
 }

@@ -1,6 +1,6 @@
 package com.odop.community.response;
 
-import com.odop.community.auth.JWTToken;
+import com.odop.community.jwt.JWTToken;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -25,8 +25,8 @@ public class ResponseHandler {
 
     public static ResponseEntity<Void> handleResponse(JWTToken token) {
         HttpHeaders headers = new HttpHeaders();
-        headers.set(HttpHeaders.AUTHORIZATION, "Bearer " + token.accessToken());
-        headers.set("RefreshToken", "Bearer " + token.refreshToken());
+        headers.set(HttpHeaders.AUTHORIZATION, token.accessToken());
+        headers.set("RefreshToken", token.refreshToken());
 
         return ResponseEntity.ok().headers(headers).build();
     }

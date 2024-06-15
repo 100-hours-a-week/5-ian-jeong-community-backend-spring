@@ -1,4 +1,4 @@
-package com.odop.community.auth;
+package com.odop.community.jwt;
 
 import io.jsonwebtoken.Jwts;
 import jakarta.annotation.PostConstruct;
@@ -58,7 +58,7 @@ public class JWTUtil {
     }
 
     public JWTToken createJwt(Long id) {
-        String accessToken = Jwts.builder()
+        String accessToken = "Bearer " + Jwts.builder()
                 .header()
                 .add("typ", "JWT")
                 .and()
@@ -69,7 +69,7 @@ public class JWTUtil {
                 .signWith(secretKey)
                 .compact();
 
-        String refreshToken = Jwts.builder()
+        String refreshToken = "Bearer " + Jwts.builder()
                 .header()
                 .add("typ", "JWT")
                 .and()

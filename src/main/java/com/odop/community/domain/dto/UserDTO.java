@@ -2,13 +2,11 @@ package com.odop.community.domain.dto;
 
 import com.odop.community.domain.entity.User;
 import com.odop.community.functional.Encoder;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
+@Builder
 @NoArgsConstructor  // object mapper 를 위한 기본 생성자
 @AllArgsConstructor  // entity 에서 응답을 위한 DTO 로 변환할 때 사용
 public class UserDTO {

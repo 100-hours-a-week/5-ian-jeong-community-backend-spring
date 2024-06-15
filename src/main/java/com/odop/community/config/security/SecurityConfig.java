@@ -1,16 +1,11 @@
 package com.odop.community.config.security;
 
-import com.odop.community.auth.JWTFilter;
-import io.github.bucket4j.Bandwidth;
-import io.github.bucket4j.Bucket;
-import io.github.bucket4j.Bucket4j;
-import io.github.bucket4j.Refill;
+import com.odop.community.jwt.JWTFilter;
+import com.odop.community.oauth2.CustomSuccessHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -22,8 +17,6 @@ import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import java.time.Duration;
-
 import static org.springframework.security.config.Customizer.withDefaults;
 
 @Configuration
@@ -32,6 +25,7 @@ import static org.springframework.security.config.Customizer.withDefaults;
 public class SecurityConfig {
     private final JWTFilter jwtFilter;
     private final OAuth2UserService oAuth2UserService;
+    private final CustomSuccessHandler customSuccessHandler;
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
@@ -58,6 +52,7 @@ public class SecurityConfig {
                                 (userInfoEndpointConfig) -> userInfoEndpointConfig
                                 .userService(oAuth2UserService)
                         )
+                        .successHandler(customSuccessHandler)
                 )
 
 
@@ -65,19 +60,17 @@ public class SecurityConfig {
                 .authorizeHttpRequests((requests) -> {
                     requests.requestMatchers(
                                     "/",
+                                    "/login", // permit이지만 UsernamePasswordAuthenticationFilter 를 거쳐야 함
                                     "/users",
                                     "/users/email",
                                     "/users/nickname",
                                     "/users/sign-up",
-                                    "/auth/sign-in",
                                     "/auth/refresh-token"
                             ).permitAll()  // 인증없이 요청가능
                             .anyRequest().authenticated();
                 })
 
-                .addFilterAt(jwtFilter, UsernamePasswordAuthenticationFilter.class)  // HTTP 요청을 가로채서 JWT 토큰의 유효성을 검사하고 사용자를 인증
-
-                // 세션 Stateless 로 세팅
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .sessionManagement((session) -> session
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 

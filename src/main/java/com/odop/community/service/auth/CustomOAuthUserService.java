@@ -46,25 +46,16 @@ public class CustomOAuthUserService extends DefaultOAuth2UserService {
         Optional<User> existData = userRepository.findByNickname(username);
 
         if (existData.isEmpty()) { // 없다면 OAuth 유저 새로 등록
-
             User user = new User();
             user.setNickname(username);
             user.setEmail(oAuth2Response.getEmail());
 
             userRepository.insert(user);
-
-            UserDTO userDTO = new UserDTO();
-            userDTO.setNickname(username);
-
-            return new CustomOAuth2User(userDTO);
+            return new CustomOAuth2User(UserDTO.convertToDTO(userRepository.findByNickname(username).get()));
 
         } else { // 있다면
             userRepository.update(existData.get()); // 업데이트
-
-            UserDTO userDTO = new UserDTO();
-            userDTO.setNickname(existData.get().getNickname());
-
-            return new CustomOAuth2User(userDTO);
+            return new CustomOAuth2User(UserDTO.convertToDTO(existData.get()));
         }
     }
 }

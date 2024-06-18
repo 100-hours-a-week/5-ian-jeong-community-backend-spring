@@ -34,13 +34,13 @@ public class Post {
     private String imageName;
 
     @Column(name="view_count" ,nullable = false)
-    private Long viewCount;
+    private Long viewCount = 0L;
 
     @Column(name="like_count", nullable = false)
-    private Long likeCount;
+    private Long likeCount = 0L;
 
     @Column(name="comment_count", nullable = false)
-    private Long commentCount;
+    private Long commentCount = 0L;
 
     @Column(name="created_at", nullable = false)
     private LocalDateTime createdAt;

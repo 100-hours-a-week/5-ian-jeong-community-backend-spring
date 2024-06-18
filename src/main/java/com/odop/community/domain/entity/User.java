@@ -1,10 +1,7 @@
 package com.odop.community.domain.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
@@ -23,13 +20,15 @@ public class User {
     @Column(nullable = false)
     private String email;
 
-    @Column(nullable = false)
     private String password;
 
     @Column(nullable = false)
     private String nickname;
 
     private String image;
+
+    @Column(nullable = false)
+    private String provider;
 
     @Column(name="created_at", nullable = false)
     private LocalDateTime createdAt;
@@ -56,12 +55,14 @@ public class User {
             String email,
             String password,
             String nickname,
-            String image
+            String image,
+            String provider
             ) {
         this.id = id;
         this.email = email;
         this.password = password;
         this.nickname = nickname;
         this.image = image;
+        this.provider = provider;
     }
 }

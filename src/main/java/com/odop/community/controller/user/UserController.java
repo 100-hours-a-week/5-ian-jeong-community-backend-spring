@@ -4,6 +4,7 @@ import com.odop.community.domain.dto.UserDTO;
 import org.springframework.http.ResponseEntity;
 
 public interface UserController {
+    ResponseEntity<?> extractIdFromToken(String accessToken);
     ResponseEntity<?> validateEmail(String email);
     ResponseEntity<?> validateNickname(String password);
     ResponseEntity<?> join(UserDTO userDTO);

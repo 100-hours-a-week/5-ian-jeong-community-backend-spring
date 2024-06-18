@@ -1,8 +1,10 @@
-package com.odop.community.domain.dto.auth;
+package com.odop.community.oauth2;
 
-import com.odop.community.enums.OAuthProvider;
+import com.odop.community.enums.Provider;
 
 import java.util.Map;
+
+import static com.odop.community.enums.Provider.*;
 
 public class NaverResponse implements OAuth2Response {
     private final Map<String, Object> attribute;
@@ -12,31 +14,27 @@ public class NaverResponse implements OAuth2Response {
     }
 
     @Override
-    public OAuthProvider getProvider() {
-
-        return OAuthProvider.NAVER;
+    public Provider getProvider() {
+        return NAVER;
     }
 
     @Override
     public String getProviderId() {
-
         return attribute.get("id").toString();
     }
 
     @Override
     public String getEmail() {
-
         return attribute.get("email").toString();
     }
 
     @Override
     public String getName() {
-
-        return attribute.get("name").toString();
+        return attribute.get("email").toString();
     }
 
     @Override
     public String getProfileImage() {
-        return null;
+        return attribute.get("profile_image").toString();
     }
 }

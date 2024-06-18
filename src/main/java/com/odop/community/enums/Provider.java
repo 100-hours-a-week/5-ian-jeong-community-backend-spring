@@ -1,13 +1,14 @@
 package com.odop.community.enums;
 
-public enum OAuthProvider {
+public enum Provider {
+    LOCAL("local"),
     GOOGLE("google"),
     NAVER("naver"),
     KAKAO("kakao");
 
     private final String name;
 
-    OAuthProvider(String name) {
+    Provider(String name) {
         this.name = name;
     }
 
@@ -15,15 +16,15 @@ public enum OAuthProvider {
         return name;
     }
 
-    public static OAuthProvider find(String text) {
+    public static Provider find(String text) {
         if (text != null) {
-            for (OAuthProvider provider : OAuthProvider.values()) {
+            for (Provider provider : Provider.values()) {
                 if (text.equalsIgnoreCase(provider.getName())) {
                     return provider;
                 }
             }
         }
 
-        return OAuthProvider.GOOGLE;
+        return Provider.LOCAL;
     }
 }

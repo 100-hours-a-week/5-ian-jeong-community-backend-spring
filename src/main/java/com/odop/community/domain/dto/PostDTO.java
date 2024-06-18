@@ -1,15 +1,13 @@
 package com.odop.community.domain.dto;
 
 import com.odop.community.domain.entity.Post;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
 @Getter
 @Setter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class PostDTO {
@@ -29,17 +27,17 @@ public class PostDTO {
     }
 
     public static PostDTO convertToDTO(Post post) {
-        return new PostDTO(
-                post.getId(),
-                post.getUserId(),
-                post.getTitle(),
-                post.getContent(),
-                post.getImageName(),
-                post.getImage(),
-                post.getViewCount(),
-                post.getLikeCount(),
-                post.getCommentCount(),
-                post.getCreatedAt()
-        );
+        return PostDTO.builder()
+                .id(post.getId())
+                .userId(post.getUserId())
+                .title(post.getTitle())
+                .content(post.getContent())
+                .imageName(post.getImageName())
+                .image(post.getImage())
+                .viewCount(post.getViewCount())
+                .likeCount(post.getLikeCount())
+                .commentCount(post.getCommentCount())
+                .createdAt(post.getCreatedAt())
+                .build();
     }
 }

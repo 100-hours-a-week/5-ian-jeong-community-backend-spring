@@ -8,12 +8,11 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
 public class UserRepositoryImpl implements UserRepository {
-    private static final String INSERT = "INSERT INTO users (email, password, nickname, image) VALUES (?, ?, ?, ?)";
+    private static final String INSERT = "INSERT INTO users (email, password, nickname, image, provider) VALUES (?, ?, ?, ?, ?)";
     private static final String SELECT_ALL = "SELECT " +
             "id, " +
             "email, " +
@@ -27,6 +26,7 @@ public class UserRepositoryImpl implements UserRepository {
             "WHERE deleted_at IS NULL";
     private static final String SELECT_BY_ID = "SELECT id, email, password, nickname, image FROM users WHERE id = ? AND deleted_at IS NULL";
     private static final String SELECT_BY_NICKNAME = "SELECT id, email, password, nickname, image FROM users WHERE nickname = ? AND deleted_at IS NULL";
+    private static final String SELECT_BY_EMAIL = "SELECT id, email, password, nickname, image FROM users WHERE email = ? AND deleted_at IS NULL";
     private static final String UPDATE = "UPDATE users SET nickname = ?, image = ? WHERE id = ? AND deleted_at IS NULL";
     private static final String UPDATE_PASSWORD = "UPDATE users SET password = ? WHERE id = ? AND deleted_at IS NULL";
     private static final String DELETE = "UPDATE users SET deleted_at = CURRENT_TIMESTAMP() WHERE id = ?";
@@ -41,7 +41,8 @@ public class UserRepositoryImpl implements UserRepository {
                     user.getEmail(),
                     user.getPassword(),
                     user.getNickname(),
-                    user.getImage()
+                    user.getImage(),
+                    user.getProvider()
             );
 
         } catch(RuntimeException e) {
@@ -72,12 +73,24 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public Optional<User> findByNickname(String nickname) {
+    public User findByNickname(String nickname) {
         try {
-            return Optional.ofNullable(jdbcTemplate.queryForObject(SELECT_BY_NICKNAME, BeanPropertyRowMapper.newInstance(User.class), nickname));
+            return jdbcTemplate.queryForObject(SELECT_BY_NICKNAME, BeanPropertyRowMapper.newInstance(User.class), nickname);
 
         } catch (EmptyResultDataAccessException e) {
             throw new EmptyResultDataAccessException("User with nickname not found => [" + nickname + "]", 1, e);
+        } catch(RuntimeException e) {
+            throw new RuntimeException("Query to select a user failed", e);
+        }
+    }
+
+    @Override
+    public User findByEmail(String email) {
+        try {
+            return jdbcTemplate.queryForObject(SELECT_BY_EMAIL, BeanPropertyRowMapper.newInstance(User.class), email);
+
+        } catch (EmptyResultDataAccessException e) {
+            throw new EmptyResultDataAccessException("User with email not found => [" + email + "]", 1, e);
         } catch(RuntimeException e) {
             throw new RuntimeException("Query to select a user failed", e);
         }

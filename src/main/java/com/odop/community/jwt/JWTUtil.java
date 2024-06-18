@@ -1,5 +1,6 @@
 package com.odop.community.jwt;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
@@ -47,14 +48,19 @@ public class JWTUtil {
             token = token.substring(7);  // "Bearer " 접두사 제거
         }
 
-        return Jwts
-                .parser()
-                .verifyWith(secretKey)
-                .build()
-                .parseSignedClaims(token)
-                .getPayload()
-                .getExpiration()
-                .before(new Date());
+        try {
+            return Jwts
+                    .parser()
+                    .verifyWith(secretKey)
+                    .build()
+                    .parseSignedClaims(token)
+                    .getPayload()
+                    .getExpiration()
+                    .before(new Date());
+
+        } catch(ExpiredJwtException e) {
+            return false;
+        }
     }
 
     public JWTToken createJwt(Long id) {

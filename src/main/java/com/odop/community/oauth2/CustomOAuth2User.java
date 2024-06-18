@@ -1,4 +1,4 @@
-package com.odop.community.domain.dto.auth;
+package com.odop.community.oauth2;
 
 import com.odop.community.domain.dto.UserDTO;
 import org.springframework.security.core.GrantedAuthority;
@@ -40,5 +40,9 @@ public class CustomOAuth2User implements OAuth2User {
 
     public String getUsername() {
         return userDTO.getEmail();
+    }
+
+    public String getProfileImage() {
+        return userDTO.getImage();
     }
 }

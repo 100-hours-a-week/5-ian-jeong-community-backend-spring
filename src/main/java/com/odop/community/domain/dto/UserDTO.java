@@ -8,29 +8,31 @@ import lombok.*;
 @Setter
 @Builder
 @NoArgsConstructor  // object mapper 를 위한 기본 생성자
-@AllArgsConstructor  // entity 에서 응답을 위한 DTO 로 변환할 때 사용
+@AllArgsConstructor
 public class UserDTO {
     private Long id;
     private String email;
     private String password;
     private String nickname;
     private String image;
+    private String provider;
 
     public void encodePassword(Encoder encoder) {
         password = encoder.encode(password);
     }
 
     public User convertToEntity() {
-        return new User(id, email, password, nickname, image);
+        return new User(id, email, password, nickname, image, provider);
     }
 
     public static UserDTO convertToDTO(User user) {
-        return new UserDTO(
-                user.getId(),
-                user.getEmail(),
-                user.getPassword(),
-                user.getNickname(),
-                user.getImage()
-        );
+        return UserDTO.builder()
+                .id(user.getId())
+                .email(user.getEmail())
+                .password(user.getPassword())
+                .nickname(user.getNickname())
+                .image(user.getImage())
+                .provider(user.getProvider())
+                .build();
     }
 }

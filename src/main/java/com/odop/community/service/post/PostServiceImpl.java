@@ -41,7 +41,7 @@ public class PostServiceImpl implements PostService {
             storePostImage(postDTO);
             postRepository.save(postDTO.convertToEntity());
         } catch (RuntimeException e) {
-            throw new RuntimeException("Query to insert comment failed", e);
+            throw new RuntimeException("Query to insert post failed", e);
         }
     }
 

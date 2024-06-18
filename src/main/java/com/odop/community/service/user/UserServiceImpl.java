@@ -1,8 +1,9 @@
 package com.odop.community.service.user;
 
-import com.odop.community.domain.dto.UserDTO;
 import com.odop.community.domain.collection.Users;
+import com.odop.community.domain.dto.UserDTO;
 import com.odop.community.domain.entity.User;
+import com.odop.community.jwt.JWTUtil;
 import com.odop.community.repository.user.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -13,11 +14,14 @@ import org.springframework.util.FileCopyUtils;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.UUID;
+
+import static com.odop.community.enums.Provider.LOCAL;
 
 @Service
 @Transactional
@@ -27,6 +31,13 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JWTUtil jwtUtil;
+
+    @Override
+    public Long extractIdFromToken(String accessToken) {
+        accessToken = URLDecoder.decode(accessToken, StandardCharsets.UTF_8);
+        return jwtUtil.getId(accessToken);
+    }
 
     @Override
     public Boolean validateDuplicatedEmail(String email) {
@@ -44,6 +55,7 @@ public class UserServiceImpl implements UserService {
     public void join(UserDTO userDTO) throws IOException {
         storeUserImage(userDTO);
         userDTO.encodePassword(passwordEncoder::encode);
+        userDTO.setProvider(LOCAL.getName());
         userRepository.insert(userDTO.convertToEntity());
     }
 
@@ -89,7 +101,7 @@ public class UserServiceImpl implements UserService {
     }
 
     private void loadUserImage(User user) throws IOException {
-        if (!user.getImage().isEmpty()) {
+        if (user.getImage() != null && !user.getImage().isEmpty()) {
             Path imagePath = Paths.get(USER_IMAGE_DIRECTORY + user.getImage());
             String image = Files.readString(imagePath, StandardCharsets.UTF_8);
             user.setImage(image);
@@ -97,7 +109,7 @@ public class UserServiceImpl implements UserService {
     }
 
     private void updateUserImage(UserDTO userDTO, User user) throws IOException {
-        if (!userDTO.getImage().isEmpty()) {
+        if (userDTO.getImage() != null && !userDTO.getImage().isEmpty()) {
             Path imagePath = Paths.get(USER_IMAGE_DIRECTORY + user.getImage()); // 기존 path 에 저장
 
             try (OutputStream outputStream = new FileOutputStream(imagePath.toFile())) {

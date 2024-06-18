@@ -1,9 +1,9 @@
-package com.odop.community.domain.dto.auth;
+package com.odop.community.oauth2;
 
-import com.odop.community.enums.OAuthProvider;
+import com.odop.community.enums.Provider;
 
 public interface OAuth2Response {
-    OAuthProvider getProvider();
+    Provider getProvider();
     String getProviderId();
     String getEmail();
     String getName();

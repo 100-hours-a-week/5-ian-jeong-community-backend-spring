@@ -37,7 +37,7 @@ public class JWTFilter extends OncePerRequestFilter {
     private static final List<String> EXCLUDE_URLS = Arrays.asList(
             "/login",
             "/users/email",
-            "/users/password",
+            "/users/nickname",
             "/users",
             "/oauth2/authorization/**"
     );
@@ -88,11 +88,6 @@ public class JWTFilter extends OncePerRequestFilter {
                 discardRefreshToken(userId);
                 saveRefreshToken(userId, jwtToken.refreshToken());
                 response.addCookie(createCookie("Authorization", URLEncoder.encode(jwtToken.accessToken(), StandardCharsets.UTF_8)));
-
-                log.info("{} pass authentication", userId);
-                filterChain.doFilter(request, response);
-
-                return;
             }
 
 

@@ -54,7 +54,6 @@ public class PostServiceImpl implements PostService {
         }
     }
 
-
     @Override
     @Transactional(isolation = Isolation.SERIALIZABLE)
     public PostDetailDTO findById(Long id) throws IOException {
@@ -75,7 +74,7 @@ public class PostServiceImpl implements PostService {
 
 
     @Override
-    public void modify(PostDTO postDTO) throws IOException { //여기서는 쿼리Dsl을 한 번 적용해보자
+    public void modify(PostDTO postDTO) throws IOException {
         Post post = postRepository.findById(postDTO.getId())
                 .orElseThrow(() ->
                         new EmptyResultDataAccessException("Post with id not found => [" + postDTO.getId() + "]", 1, new Exception())

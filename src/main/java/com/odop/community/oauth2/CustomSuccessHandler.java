@@ -1,14 +1,13 @@
 package com.odop.community.oauth2;
 
+import com.odop.community.auth.RefreshTokenService;
 import com.odop.community.domain.entity.RefreshToken;
 import com.odop.community.jwt.JWTToken;
 import com.odop.community.jwt.JWTUtil;
-import com.odop.community.auth.RefreshTokenService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
@@ -30,16 +29,11 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
-
-        //OAuth2User
         CustomOAuth2User customUserDetails = (CustomOAuth2User) authentication.getPrincipal();
-
         Long id = customUserDetails.getId();
-
         JWTToken token = jwtUtil.createJwt(id);
 
-        refreshTokenService
-                .save(
+        refreshTokenService.save(
                 RefreshToken.builder()
                         .userId(id)
                         .token(token.refreshToken())
@@ -54,9 +48,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     private Cookie createCookie(String key, String value) {
         Cookie cookie = new Cookie(key, value);
         cookie.setMaxAge(3600000);
-
         cookie.setPath("/");
-//        cookie.setHttpOnly(true);
 
         return cookie;
     }

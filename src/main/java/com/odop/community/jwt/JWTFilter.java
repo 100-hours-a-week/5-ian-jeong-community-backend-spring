@@ -2,10 +2,8 @@ package com.odop.community.jwt;
 
 import com.odop.community.auth.CustomUserDetails;
 import com.odop.community.auth.RefreshTokenService;
-import com.odop.community.domain.dto.UserDTO;
 import com.odop.community.domain.entity.RefreshToken;
 import com.odop.community.domain.entity.User;
-import com.odop.community.oauth2.CustomOAuth2User;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -48,6 +46,7 @@ public class JWTFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String requestUri = request.getRequestURI();
 
+        // 해당 포인트로 들어온다면 아래 인가를 위한 작업 필요없이 다음 필터로 넘겨버림
         if (EXCLUDE_URLS.contains(requestUri)) {
             filterChain.doFilter(request, response);
             return;
@@ -55,10 +54,9 @@ public class JWTFilter extends OncePerRequestFilter {
 
         Long userId = Long.parseLong(request.getHeader("user-id"));
 
-        Cookie[] cookies = request.getCookies(); // 쿠키가 없다면 인증토큰을 아직 발급받지 못한 상황
+        Cookie[] cookies = request.getCookies(); // 어세스 토큰이 들어있는 쿠키가 없다면 아직 로그인하지 않은 상태와 동일
         if (cookies == null) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            filterChain.doFilter(request, response);
             return;
         }
 
@@ -68,9 +66,10 @@ public class JWTFilter extends OncePerRequestFilter {
                 .map(cookie -> URLDecoder.decode(cookie.getValue(), StandardCharsets.UTF_8))
                 .orElse(null);
 
+        // 기본적으로 Spring Security는 인증되지 않은 요청이 들어오면 로그인 페이지로 리다이렉트하도록 설정 되어있음
+        // 여기서 필터체인으로 념기면 내부적으로 인증이 안됐음을 알고 8080/login 200 OK 로 리다이렉트 때려버림
         if(!isToken(authorization)) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // 여기서 필터체인으로 념기면 내부적으로 인증이안됐음을 알고 8080/login 200 OK 로 리다이렉트때려버림 그래서 주석 ㄱㄱ
-//            filterChain.doFilter(request, response);
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             return;
         }
 
@@ -90,7 +89,6 @@ public class JWTFilter extends OncePerRequestFilter {
                 saveRefreshToken(userId, jwtToken.refreshToken());
                 response.addCookie(createCookie("Authorization", URLEncoder.encode(jwtToken.accessToken(), StandardCharsets.UTF_8)));
 
-
                 log.info("{} pass authentication", userId);
                 filterChain.doFilter(request, response);
 
@@ -106,21 +104,16 @@ public class JWTFilter extends OncePerRequestFilter {
 
             //스프링 시큐리티 인증 토큰 생성
             Authentication authToken = new UsernamePasswordAuthenticationToken(customUserDetails, null, customUserDetails.getAuthorities());
-            SecurityContextHolder.getContext().setAuthentication(authToken); //세션에 사용자 등록
+            SecurityContextHolder.getContext().setAuthentication(authToken); //세션에 사용자 등록 -> 현재 요청에 대한 일회성 인증완료 표시 같은거임
 
             log.info("{} pass authentication", userId);
             filterChain.doFilter(request, response);
-            // 일반유저 로직도 필요함
-            // 유효한 토큰이라면 검증된 요소 담고 다음 필터로 ㄱㄱ
-            // OAuth
-//            SecurityContextHolder.getContext().setAuthentication(createOAuthUserToken(userId));
 
         } catch (EmptyResultDataAccessException e) {
             log.error("Refresh token not found = {}", e.getMessage());
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         }
     }
-
 
 
 
@@ -148,18 +141,6 @@ public class JWTFilter extends OncePerRequestFilter {
     private boolean isExpired(String token) {
         return jwtUtil.isExpired(token);
     }
-
-    private Authentication createOAuthUserToken(Long id) {
-        CustomOAuth2User customOAuth2User = new CustomOAuth2User(
-                UserDTO.builder()
-                        .id(id)
-                        .build()
-        );
-
-        Authentication authToken = new UsernamePasswordAuthenticationToken(customOAuth2User, null, customOAuth2User.getAuthorities());
-        return authToken;
-    }
-
 
     private boolean isToken(String authorization) {
         return authorization != null && authorization.startsWith("Bearer ");

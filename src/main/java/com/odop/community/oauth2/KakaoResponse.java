@@ -1,11 +1,10 @@
 package com.odop.community.oauth2;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.odop.community.enums.Provider;
 
 import java.util.Map;
 
-import static com.odop.community.enums.Provider.*;
+import static com.odop.community.enums.Provider.KAKAO;
 
 public class KakaoResponse implements OAuth2Response {
     private final Map<String, Object> attribute;

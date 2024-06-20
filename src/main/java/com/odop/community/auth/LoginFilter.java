@@ -28,13 +28,10 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     private final AuthenticationManager authenticationManager;
     private final RefreshTokenService refreshTokenService;
 
-
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
         String username = obtainUsername(request);
         String password = obtainPassword(request);
-
-
 
         // 검증을 위한 계정 바구니
         UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(username, password, null);
@@ -42,7 +39,6 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         // 검증 매니저에게 검증 요청
         return authenticationManager.authenticate(authToken);
     }
-
 
     @Override
     protected void successfulAuthentication(

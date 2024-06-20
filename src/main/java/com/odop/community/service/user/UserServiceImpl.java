@@ -3,7 +3,6 @@ package com.odop.community.service.user;
 import com.odop.community.domain.collection.Users;
 import com.odop.community.domain.dto.UserDTO;
 import com.odop.community.domain.entity.User;
-import com.odop.community.jwt.JWTUtil;
 import com.odop.community.repository.user.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +13,6 @@ import org.springframework.util.FileCopyUtils;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -31,13 +29,6 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final JWTUtil jwtUtil;
-
-    @Override
-    public Long extractIdFromToken(String accessToken) {
-        accessToken = URLDecoder.decode(accessToken, StandardCharsets.UTF_8);
-        return jwtUtil.getId(accessToken);
-    }
 
     @Override
     public Boolean validateDuplicatedEmail(String email) {

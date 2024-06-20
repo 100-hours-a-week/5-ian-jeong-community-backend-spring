@@ -22,7 +22,6 @@ public class JDBCConfig {
     @Value("${spring.datasource.password}")
     private String password;
 
-
     @Bean
     public JdbcTemplate jdbcTemplate(DataSource dataSource) {
         return new JdbcTemplate(dataSource);

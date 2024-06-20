@@ -18,7 +18,6 @@ public class CustomUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         try {
             User user = userRepository.findByEmail(username);
- //인코더 추가해야함
             return new CustomUserDetails(user);
 
         } catch(EmptyResultDataAccessException e) {

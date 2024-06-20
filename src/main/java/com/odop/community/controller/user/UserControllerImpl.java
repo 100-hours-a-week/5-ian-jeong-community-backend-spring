@@ -22,17 +22,6 @@ public class UserControllerImpl implements UserController {
     private final UserService userService;
 
     @Override
-    @GetMapping("/id")
-    public ResponseEntity<?> extractIdFromToken(@CookieValue("Authorization") String accessToken) {
-        try {
-            return handleResponse(userService.extractIdFromToken(accessToken), HttpStatus.OK);
-
-        } catch (RuntimeException e) {
-            return handleException(e, ERROR_EXTRACT_ID, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    @Override
     @GetMapping("/email")
     public ResponseEntity<?> validateEmail(@RequestParam("email") String email) {
         try {

@@ -20,10 +20,6 @@ public class CommentDTO {
     private String content;
     private LocalDateTime createdAt;
 
-    public CommentDTO(Long id) {
-        this.id = id;
-    }
-
     public Comment convertToEntity() {
         return new Comment(id, postId, userId, content);
     }

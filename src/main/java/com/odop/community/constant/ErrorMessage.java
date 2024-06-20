@@ -1,7 +1,6 @@
 package com.odop.community.constant;
 
 public class ErrorMessage {
-    public static final String ERROR_EXTRACT_ID = "Extract id from token = {}";
     public static final String ERROR_EMAIL_VALIDATION = "Email validation = {}";
     public static final String ERROR_PASSWORD_VALIDATION = "Password validation = {}";
     public static final String ERROR_JOIN = "Attempt to join = {}";

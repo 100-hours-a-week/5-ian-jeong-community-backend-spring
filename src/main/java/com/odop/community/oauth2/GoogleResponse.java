@@ -13,7 +13,6 @@ public class GoogleResponse implements OAuth2Response {
         this.attribute = attribute;
     }
 
-
     @Override
     public Provider getProvider() {
         return GOOGLE;

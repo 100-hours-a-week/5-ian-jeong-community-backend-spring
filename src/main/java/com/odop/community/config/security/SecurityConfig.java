@@ -61,7 +61,7 @@ public class SecurityConfig {
                             .requestMatchers(
                                     "/users/nickname",     // 닉네임 중복검사
                                     "/users/email",                 // 이메일 중복검사
-                                    "/users",                       // post 회원가입
+                                    "/users",                       // post메서드 회원가입
                                     "/login"                        // 로그인 요청
                             ).permitAll()                           // 인증없이 요청가능
                             .anyRequest().authenticated()           // 나머지 경로 인가 필요

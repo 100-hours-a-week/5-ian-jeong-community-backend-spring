@@ -204,7 +204,7 @@ community
 
 ---
 
-<img src="./ddddd.png" alt="My Image" width="500"/>
+<img src="architecture.png" alt="My Image" width="500"/>
 
 
 

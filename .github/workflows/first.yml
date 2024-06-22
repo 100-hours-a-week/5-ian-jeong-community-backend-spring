@@ -76,3 +76,4 @@ jobs:
           sudo docker pull ${{ secrets.DOCKER_REPO }}:v1.0
           sudo docker-compose up -d
           sudo docker image prune -f
+        show-output: true

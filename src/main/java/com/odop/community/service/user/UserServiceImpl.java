@@ -25,7 +25,7 @@ import static com.odop.community.enums.Provider.LOCAL;
 @Transactional
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
-    private static final String USER_IMAGE_DIRECTORY = "/var/post/";
+    private static final String USER_IMAGE_DIRECTORY = "/var/user/";
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;

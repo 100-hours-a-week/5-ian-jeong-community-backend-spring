@@ -30,7 +30,7 @@ import java.util.UUID;
 @Transactional
 @RequiredArgsConstructor
 public class PostServiceImpl implements PostService {
-    private static final String POST_IMAGE_DIRECTORY = "src/main/resources/images/post/";
+    private static final String POST_IMAGE_DIRECTORY = "/home/ubuntu/images/post/";
 
     private final PostRepository postRepository;
     private final CommentRepository commentRepository;
@@ -131,7 +131,14 @@ public class PostServiceImpl implements PostService {
 
 
     private void storePostImage(PostDTO postDTO) throws IOException {
+
         if (!postDTO.getImage().isEmpty()) {
+            Path imageDirPath = Paths.get(POST_IMAGE_DIRECTORY);
+            // 디렉터리가 존재하지 않으면 생성
+            if (!Files.exists(imageDirPath)) {
+                Files.createDirectories(imageDirPath);
+            }
+
             String imageName = UUID.randomUUID().toString();
             Path imagePath = Paths.get(POST_IMAGE_DIRECTORY + imageName);
 

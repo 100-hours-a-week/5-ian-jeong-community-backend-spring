@@ -25,7 +25,7 @@ import static com.odop.community.enums.Provider.LOCAL;
 @Transactional
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
-    private static final String USER_IMAGE_DIRECTORY = "src/main/resources/images/user/";
+    private static final String USER_IMAGE_DIRECTORY = "/home/ubuntu/images/user/";
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
@@ -79,7 +79,17 @@ public class UserServiceImpl implements UserService {
 
     private void storeUserImage(UserDTO userDTO) throws IOException {
         if (!userDTO.getImage().isEmpty()) {
+
+            Path imageDirPath = Paths.get(USER_IMAGE_DIRECTORY);
+            // 디렉터리가 존재하지 않으면 생성
+            if (!Files.exists(imageDirPath)) {
+                Files.createDirectories(imageDirPath);
+            }
+
             String imageName = UUID.randomUUID().toString();
+
+
+
             Path imagePath = Paths.get(USER_IMAGE_DIRECTORY + imageName);
 
             try (OutputStream outputStream = new FileOutputStream(imagePath.toFile())) {

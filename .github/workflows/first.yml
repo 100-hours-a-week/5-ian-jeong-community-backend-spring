@@ -47,8 +47,6 @@ jobs:
         cd ./src/main/resources
         touch ./application.properties
         echo "${{ secrets.PROPERTIES }}" > ./application.properties
-        
-        mkdir -p ./images/post ./images/user
       shell: bash
 
     # gradle을 통해 소스코드 빌드

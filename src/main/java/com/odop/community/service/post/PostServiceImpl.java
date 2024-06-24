@@ -30,7 +30,7 @@ import java.util.UUID;
 @Transactional
 @RequiredArgsConstructor
 public class PostServiceImpl implements PostService {
-    private static final String POST_IMAGE_DIRECTORY = "/var/posts/";
+    private static final String POST_IMAGE_DIRECTORY = "/var/image/";
 
     private final PostRepository postRepository;
     private final CommentRepository commentRepository;

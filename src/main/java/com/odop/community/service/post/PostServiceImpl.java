@@ -182,6 +182,7 @@ public class PostServiceImpl implements PostService {
         List<PostDTO> postsDTO = new ArrayList<>();
 
         for (Post post : posts) {
+            System.out.println(post.getCreatedAt());
             postsDTO.add(PostDTO.convertToDTO(post));
         }
 

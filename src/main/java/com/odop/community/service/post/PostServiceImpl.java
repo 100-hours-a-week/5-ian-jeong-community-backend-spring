@@ -48,7 +48,7 @@ public class PostServiceImpl implements PostService {
     @Override
     public List<PostDTO> findAll() throws IOException {
         try {
-            return convertToPostDTOList(postRepository.findAllByDeletedAtIsNull(Sort.by(Sort.Direction.DESC, "createdAt")));
+            return convertToPostDTOList(postRepository.findAllByDeletedAtIsNullOrderByCreatedAtDesc());
         } catch (RuntimeException e) {
             throw new RuntimeException("Query to select posts failed", e);
         }

@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static com.odop.community.domain.entity.QPost.post;
@@ -56,6 +57,18 @@ public class PostRepositoryImpl implements PostRepositoryCustom {
                     .execute();
         } catch (RuntimeException e) {
             throw new RuntimeException("Query to update a post failed", e);
+        }
+    }
+
+    @Override
+    public void softDeleteById(Long id) {
+        try {
+            jpaQueryFactory.update(qPost)
+                    .set(qPost.deletedAt, LocalDateTime.now())
+                    .where(qPost.id.eq(id))
+                    .execute();
+        } catch (RuntimeException e) {
+            throw new RuntimeException("Query to delete a post failed", e);
         }
     }
 }

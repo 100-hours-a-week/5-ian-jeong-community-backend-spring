@@ -6,6 +6,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
@@ -36,6 +37,18 @@ public class CommentRepositoryImpl implements CommentRepositoryCustom {
                     .execute();
         } catch(RuntimeException e) {
             throw new RuntimeException("Query to update comment failed", e);
+        }
+    }
+
+    @Override
+    public void softDeleteById(Long id) {
+        try {
+            jpaQueryFactory.update(qComment)
+                    .set(qComment.deletedAt, LocalDateTime.now())
+                    .where(qComment.id.eq(id))
+                    .execute();
+        } catch (RuntimeException e) {
+            throw new RuntimeException("Query to delete a comment failed", e);
         }
     }
 }

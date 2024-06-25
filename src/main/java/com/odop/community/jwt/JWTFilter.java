@@ -144,9 +144,7 @@ public class JWTFilter extends OncePerRequestFilter {
     private Cookie createCookie(String key, String value) {
         Cookie cookie = new Cookie(key, value);
         cookie.setMaxAge(3600000);
-
         cookie.setPath("/");
-        cookie.setHttpOnly(false);
 
         return cookie;
     }

@@ -81,7 +81,9 @@ public class PostServiceImpl implements PostService {
                 );
 
         updatePostImage(postDTO, post);
-        postDTO.setImage(post.getImage());
+        if (postDTO.getImage().isEmpty()) {
+            postDTO.setImage(post.getImage());
+        }
 
         try {
             postRepository.update(postDTO.convertToEntity());
@@ -170,8 +172,8 @@ public class PostServiceImpl implements PostService {
             }
 
         } else {
-            postDTO.setImage(null);
-            postDTO.setImageName(null);
+            postDTO.setImage("");
+            postDTO.setImageName("");
         }
     }
 

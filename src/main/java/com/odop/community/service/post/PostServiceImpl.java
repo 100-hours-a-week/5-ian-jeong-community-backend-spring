@@ -80,8 +80,9 @@ public class PostServiceImpl implements PostService {
                         new EmptyResultDataAccessException("Post with id not found => [" + postDTO.getId() + "]", 1, new Exception())
                 );
 
-        updatePostImage(postDTO, post);
-        if (postDTO.getImage().isEmpty()) {
+        if(!postDTO.getImage().isEmpty()) {
+            updatePostImage(postDTO, post);
+        } else {
             postDTO.setImage(post.getImage());
         }
 
@@ -162,18 +163,12 @@ public class PostServiceImpl implements PostService {
     }
 
     private void updatePostImage(PostDTO postDTO, Post post) throws IOException {
-        if (!postDTO.getImage().isEmpty()) {
-            Path imagePath = Paths.get(POST_IMAGE_DIRECTORY + post.getImage());
+        Path imagePath = Paths.get(POST_IMAGE_DIRECTORY + post.getImage());
 
-            try (OutputStream outputStream = new FileOutputStream(imagePath.toFile())) {
-                FileCopyUtils.copy(postDTO.getImage().getBytes(), outputStream);
-            } catch (IOException e) {
-                throw new IOException(e);
-            }
-
-        } else {
-            postDTO.setImage("");
-            postDTO.setImageName("");
+        try (OutputStream outputStream = new FileOutputStream(imagePath.toFile())) {
+            FileCopyUtils.copy(postDTO.getImage().getBytes(), outputStream);
+        } catch (IOException e) {
+            throw new IOException(e);
         }
     }
 

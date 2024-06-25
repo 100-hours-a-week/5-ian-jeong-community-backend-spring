@@ -8,6 +8,7 @@ import com.odop.community.domain.entity.Post;
 import com.odop.community.repository.comment.CommentRepository;
 import com.odop.community.repository.post.PostRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -30,7 +31,8 @@ import java.util.UUID;
 @Transactional
 @RequiredArgsConstructor
 public class PostServiceImpl implements PostService {
-    private static final String POST_IMAGE_DIRECTORY = "/var/image/";
+    @Value("${post.image.directory}")
+    private String POST_IMAGE_DIRECTORY;
 
     private final PostRepository postRepository;
     private final CommentRepository commentRepository;

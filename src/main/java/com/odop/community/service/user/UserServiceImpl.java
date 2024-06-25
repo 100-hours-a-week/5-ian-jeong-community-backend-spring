@@ -6,6 +6,7 @@ import com.odop.community.domain.entity.User;
 import com.odop.community.repository.user.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.FileCopyUtils;
@@ -25,7 +26,8 @@ import static com.odop.community.enums.Provider.LOCAL;
 @Transactional
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
-    private static final String USER_IMAGE_DIRECTORY = "/var/image/";
+    @Value("${user.image.directory}")
+    private String USER_IMAGE_DIRECTORY;
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;

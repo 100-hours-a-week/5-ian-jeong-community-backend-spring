@@ -146,7 +146,7 @@ public class JWTFilter extends OncePerRequestFilter {
         cookie.setMaxAge(3600000);
 
         cookie.setPath("/");
-        cookie.setHttpOnly(true);
+        cookie.setHttpOnly(false);
 
         return cookie;
     }

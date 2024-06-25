@@ -163,6 +163,10 @@ public class PostServiceImpl implements PostService {
     }
 
     private void updatePostImage(PostDTO postDTO, Post post) throws IOException {
+        if (post.getImage().isEmpty()) {
+            post.setImage(UUID.randomUUID().toString());
+        }
+
         Path imagePath = Paths.get(POST_IMAGE_DIRECTORY + post.getImage());
 
         try (OutputStream outputStream = new FileOutputStream(imagePath.toFile())) {

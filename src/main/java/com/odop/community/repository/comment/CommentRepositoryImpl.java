@@ -26,4 +26,16 @@ public class CommentRepositoryImpl implements CommentRepositoryCustom {
             throw new RuntimeException("Query to select comment failed", e);
         }
     }
+
+    @Override
+    public void update(Comment comment) {
+        try {
+            jpaQueryFactory.update(qComment)
+                    .set(qComment.content, comment.getContent())
+                    .where(qComment.id.eq(comment.getId()))
+                    .execute();
+        } catch(RuntimeException e) {
+            throw new RuntimeException("Query to update comment failed", e);
+        }
+    }
 }

@@ -43,4 +43,19 @@ public class PostRepositoryImpl implements PostRepositoryCustom {
             throw new RuntimeException("Query to select a post failed", e);
         }
     }
+
+    @Override
+    public void update(Post post) {
+        try {
+            jpaQueryFactory.update(qPost)
+                    .set(qPost.title, post.getTitle())
+                    .set(qPost.content, post.getTitle())
+                    .set(qPost.imageName, post.getImageName())
+                    .set(qPost.image, post.getImage())
+                    .where(qPost.id.eq(post.getId()))
+                    .execute();
+        } catch (RuntimeException e) {
+            throw new RuntimeException("Query to update a post failed", e);
+        }
+    }
 }

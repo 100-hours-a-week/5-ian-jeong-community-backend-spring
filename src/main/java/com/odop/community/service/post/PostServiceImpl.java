@@ -84,7 +84,7 @@ public class PostServiceImpl implements PostService {
         postDTO.setImage(post.getImage());
 
         try {
-            postRepository.save(postDTO.convertToEntity());
+            postRepository.update(postDTO.convertToEntity());
         } catch (RuntimeException e) {
             throw new RuntimeException("Query to update post failed", e);
         }
@@ -92,8 +92,8 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public void remove(Long id) {
-        try {
-            postRepository.deleteById(id);
+        try { // 게시글 댓글 삭제 소프트 딜리트로 수정
+            postRepository.softDeleteById(id);
         } catch (RuntimeException e) {
             throw new RuntimeException("Query to delete post failed", e);
         }
@@ -120,7 +120,7 @@ public class PostServiceImpl implements PostService {
     @Override
     public void removeComment(Long id) {
         try {
-            commentRepository.deleteById(id);
+            commentRepository.softDeleteById(id);
         } catch (RuntimeException e) {
             throw new RuntimeException("Query to delete comment failed", e);
         }

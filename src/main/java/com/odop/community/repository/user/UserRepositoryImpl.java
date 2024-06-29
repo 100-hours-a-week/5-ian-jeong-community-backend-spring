@@ -24,7 +24,7 @@ public class UserRepositoryImpl implements UserRepository {
             "DATE_FORMAT(deleted_at, '%Y-%m-%d %H:%i:%s') AS deleted_at " +
             "FROM users " +
             "WHERE deleted_at IS NULL";
-    private static final String SELECT_BY_ID = "SELECT id, email, password, nickname, image FROM users WHERE id = ? AND deleted_at IS NULL";
+    private static final String SELECT_BY_ID = "SELECT id, email, password, nickname, image FROM users WHERE id = ?";
     private static final String SELECT_BY_NICKNAME = "SELECT id, email, password, nickname, image FROM users WHERE nickname = ? AND deleted_at IS NULL";
     private static final String SELECT_BY_EMAIL = "SELECT id, email, password, nickname, image FROM users WHERE email = ? AND deleted_at IS NULL";
     private static final String UPDATE = "UPDATE users SET nickname = ?, image = ? WHERE id = ? AND deleted_at IS NULL";

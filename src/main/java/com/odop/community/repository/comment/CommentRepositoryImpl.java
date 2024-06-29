@@ -20,7 +20,7 @@ public class CommentRepositoryImpl implements CommentRepositoryCustom {
         try {
             return jpaQueryFactory.selectFrom(qComment)
                     .where(qComment.postId.eq(postId).and(qComment.deletedAt.isNull()))
-                    .orderBy(qComment.createdAt.desc())
+                    .orderBy(qComment.createdAt.asc())
                     .fetch();
 
         } catch(RuntimeException e) {

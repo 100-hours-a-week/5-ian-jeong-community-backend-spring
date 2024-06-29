@@ -50,7 +50,7 @@ public class PostRepositoryImpl implements PostRepositoryCustom {
         try {
             jpaQueryFactory.update(qPost)
                     .set(qPost.title, post.getTitle())
-                    .set(qPost.content, post.getTitle())
+                    .set(qPost.content, post.getContent())
                     .set(qPost.imageName, post.getImageName())
                     .set(qPost.image, post.getImage())
                     .where(qPost.id.eq(post.getId()))

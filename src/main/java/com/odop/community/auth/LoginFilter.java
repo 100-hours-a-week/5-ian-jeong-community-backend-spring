@@ -19,7 +19,6 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 
 
-@RequiredArgsConstructor
 public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     @Value("${frontend.server.ip}")
     private String frontEndServerIp;
@@ -27,6 +26,18 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     private final JWTUtil jwtUtil;
     private final AuthenticationManager authenticationManager;
     private final RefreshTokenService refreshTokenService;
+
+    public LoginFilter(
+            JWTUtil jwtUtil,
+            AuthenticationManager authenticationManager,
+            RefreshTokenService refreshTokenService
+    ) {
+        this.setFilterProcessesUrl("/api/v1/login");
+        this.authenticationManager = authenticationManager;
+        this.jwtUtil = jwtUtil;
+        this.refreshTokenService = refreshTokenService;
+    }
+
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {

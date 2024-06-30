@@ -19,7 +19,7 @@ import static com.odop.community.response.ResponseHandler.handleResponse;
 
 @Slf4j
 @RestController
-@RequestMapping("/posts")
+@RequestMapping("/api/v1/posts")
 @RequiredArgsConstructor
 public class PostControllerImpl implements PostController {
     private final PostService postService;

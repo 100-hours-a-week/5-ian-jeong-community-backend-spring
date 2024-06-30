@@ -58,7 +58,14 @@ public class SecurityConfig {
 
                 // jwt, 로그인 필터 추가
                 .addFilterBefore(jwtFilter, LoginFilter.class)
-                .addFilterAt(new LoginFilter(jwtUtil, authenticationConfiguration.getAuthenticationManager(), refreshTokenService), UsernamePasswordAuthenticationFilter.class)
+                .addFilterAt(
+                        new LoginFilter(
+                                jwtUtil,
+                                authenticationConfiguration.getAuthenticationManager(),
+                                refreshTokenService
+                        ),
+                        UsernamePasswordAuthenticationFilter.class
+                )
 
                 // OAuth
                 .oauth2Login((oauth2) -> oauth2

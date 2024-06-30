@@ -18,7 +18,7 @@ import static com.odop.community.response.ResponseHandler.*;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/users")
+@RequestMapping("/api/v1/users")
 public class UserControllerImpl implements UserController {
     private final UserService userService;
 

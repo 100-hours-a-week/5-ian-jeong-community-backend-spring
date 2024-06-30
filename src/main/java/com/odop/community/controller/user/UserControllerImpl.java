@@ -8,6 +8,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 
@@ -44,10 +45,13 @@ public class UserControllerImpl implements UserController {
     }
 
     @Override
-    @PostMapping
-    public ResponseEntity<?> join(@RequestBody UserDTO userDTO) {
+    @PostMapping(consumes = "multipart/form-data")
+    public ResponseEntity<?> join(
+            @ModelAttribute UserDTO userDTO,
+            @RequestParam(value = "profile-image", required = false) MultipartFile multipartFile
+    ) {
         try {
-            userService.join(userDTO);
+            userService.join(userDTO, multipartFile);
             return handleResponse(HttpStatus.CREATED);
 
         } catch (RuntimeException e) {
@@ -75,11 +79,15 @@ public class UserControllerImpl implements UserController {
 
 
     @Override
-    @PatchMapping("/{userId}")
-    public ResponseEntity<?> modify(@PathVariable("userId") Long id, @RequestBody UserDTO userDTO) {
+    @PatchMapping(value = "/{userId}", consumes = "multipart/form-data")
+    public ResponseEntity<?> modify(
+            @PathVariable("userId") Long id,
+            @ModelAttribute UserDTO userDTO,
+            @RequestParam(value = "profile-image", required = false) MultipartFile multipartFile
+    ) {
         try {
             userDTO.setId(id);
-            userService.modify(userDTO);
+            userService.modify(userDTO, multipartFile);
             return handleResponse(HttpStatus.NO_CONTENT);
 
         } catch(EmptyResultDataAccessException e) {

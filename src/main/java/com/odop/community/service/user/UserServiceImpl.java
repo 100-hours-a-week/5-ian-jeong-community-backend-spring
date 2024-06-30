@@ -4,21 +4,15 @@ import com.odop.community.domain.collection.Users;
 import com.odop.community.domain.dto.UserDTO;
 import com.odop.community.domain.entity.User;
 import com.odop.community.repository.user.UserRepository;
+import com.odop.community.service.aws.S3Uploader;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.util.FileCopyUtils;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.UUID;
 
 import static com.odop.community.enums.Provider.LOCAL;
 
@@ -31,6 +25,7 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final S3Uploader s3Uploader;
 
     @Override
     public Boolean validateDuplicatedEmail(String email) {
@@ -45,26 +40,44 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void join(UserDTO userDTO) throws IOException {
-        storeUserImage(userDTO);
+    public void join(UserDTO userDTO, MultipartFile multipartFile) throws IOException {
+        String imagePath = "";
+
+        if (multipartFile != null && !multipartFile.isEmpty()) {
+            imagePath = s3Uploader.upload(multipartFile, USER_IMAGE_DIRECTORY);
+        }
+
+        userDTO.setImage(imagePath);
         userDTO.encodePassword(passwordEncoder::encode);
         userDTO.setProvider(LOCAL.getName());
+
         userRepository.insert(userDTO.convertToEntity());
     }
 
     @Override
     public UserDTO findById(Long id) throws IOException {
         User user = userRepository.selectById(id);
-        loadUserImage(user);
 
         return UserDTO.convertToDTO(user);
     }
 
     @Override
-    public void modify(UserDTO userDTO) throws IOException {
+    public void modify(UserDTO userDTO, MultipartFile multipartFile) throws IOException {
         User user = userRepository.selectById(userDTO.getId());
-        updateUserImage(userDTO, user);
 
+        String imagePath = "";
+
+        // 기존이미지가 있다면 삭제 필요
+        if(!user.getImage().isEmpty() && multipartFile != null && !multipartFile.isEmpty()) {
+            imagePath = s3Uploader.updateFile(multipartFile, user.getImage(), USER_IMAGE_DIRECTORY);
+        }
+
+        // 기존이미지가 없고 업데이트 이미지가 있다면
+        if(user.getImage().isEmpty() && multipartFile != null && !multipartFile.isEmpty()) {
+            imagePath = s3Uploader.upload(multipartFile, USER_IMAGE_DIRECTORY);
+        }
+
+        userDTO.setImage(imagePath);
         userRepository.update(userDTO.convertToEntity());
     }
 
@@ -77,50 +90,5 @@ public class UserServiceImpl implements UserService {
     @Override
     public void withdraw(Long id) {
         userRepository.delete(id);
-    }
-
-    private void storeUserImage(UserDTO userDTO) throws IOException {
-        if (!userDTO.getImage().isEmpty()) {
-
-            Path imageDirPath = Paths.get(USER_IMAGE_DIRECTORY);
-            // 디렉터리가 존재하지 않으면 생성
-            if (!Files.exists(imageDirPath)) {
-                Files.createDirectories(imageDirPath);
-            }
-
-            String imageName = UUID.randomUUID().toString();
-
-
-
-            Path imagePath = Paths.get(USER_IMAGE_DIRECTORY + imageName);
-
-            try (OutputStream outputStream = new FileOutputStream(imagePath.toFile())) {
-                FileCopyUtils.copy(userDTO.getImage().getBytes(), outputStream);
-                userDTO.setImage(imageName);
-            } catch (IOException e) {
-                throw new IOException(e);
-            }
-        }
-    }
-
-    private void loadUserImage(User user) throws IOException {
-        if (user.getImage() != null && !user.getImage().isEmpty()) {
-            Path imagePath = Paths.get(USER_IMAGE_DIRECTORY + user.getImage());
-            String image = Files.readString(imagePath, StandardCharsets.UTF_8);
-            user.setImage(image);
-        }
-    }
-
-    private void updateUserImage(UserDTO userDTO, User user) throws IOException {
-        if (userDTO.getImage() != null && !userDTO.getImage().isEmpty()) {
-            Path imagePath = Paths.get(USER_IMAGE_DIRECTORY + user.getImage()); // 기존 path 에 저장
-
-            try (OutputStream outputStream = new FileOutputStream(imagePath.toFile())) {
-                FileCopyUtils.copy(userDTO.getImage().getBytes(), outputStream);
-                userDTO.setImage(user.getImage());
-            } catch (IOException e) {
-                throw new IOException(e);
-            }
-        }
     }
 }

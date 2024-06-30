@@ -44,9 +44,6 @@ public class JWTFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        String origin = request.getHeader("Origin");
-        System.out.println("Request Origin: " + origin);
-
         String requestUri = request.getRequestURI();
 
         // 해당 포인트로 들어온다면 아래 인가를 위한 작업 필요없이 다음 필터로 넘겨버림

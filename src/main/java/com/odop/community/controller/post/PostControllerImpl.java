@@ -9,6 +9,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 
@@ -24,10 +25,13 @@ public class PostControllerImpl implements PostController {
     private final PostService postService;
 
     @Override
-    @PostMapping
-    public ResponseEntity<?> add(@RequestBody PostDTO postDTO) {
+    @PostMapping(consumes = "multipart/form-data")
+    public ResponseEntity<?> add(
+            @ModelAttribute PostDTO postDTO,
+            @RequestParam(value = "post-image", required = false) MultipartFile multipartFile
+    ) {
         try {
-            postService.add(postDTO);
+            postService.add(postDTO, multipartFile);
             return handleResponse(HttpStatus.CREATED);
 
         } catch (RuntimeException e) {
@@ -68,11 +72,15 @@ public class PostControllerImpl implements PostController {
 
 
     @Override
-    @PatchMapping("/{postId}")
-    public ResponseEntity<?> modify(@PathVariable("postId") Long id, @RequestBody PostDTO postDTO) {
+    @PatchMapping(value = "/{postId}", consumes = "multipart/form-data")
+    public ResponseEntity<?> modify(
+            @PathVariable("postId") Long id,
+            @ModelAttribute PostDTO postDTO,
+            @RequestParam(value = "post-image", required = false) MultipartFile multipartFile
+            ) {
         try {
             postDTO.setId(id);
-            postService.modify(postDTO);
+            postService.modify(postDTO, multipartFile);
             return handleResponse(HttpStatus.NO_CONTENT);
 
         }  catch(EmptyResultDataAccessException e) {

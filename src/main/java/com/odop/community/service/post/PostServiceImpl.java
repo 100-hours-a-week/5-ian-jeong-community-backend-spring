@@ -7,6 +7,7 @@ import com.odop.community.domain.entity.Comment;
 import com.odop.community.domain.entity.Post;
 import com.odop.community.repository.comment.CommentRepository;
 import com.odop.community.repository.post.PostRepository;
+import com.odop.community.service.aws.S3Uploader;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.FileCopyUtils;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -36,11 +38,18 @@ public class PostServiceImpl implements PostService {
 
     private final PostRepository postRepository;
     private final CommentRepository commentRepository;
+    private final S3Uploader s3Uploader;
 
     @Override
-    public void add(PostDTO postDTO) throws IOException {
+    public void add(PostDTO postDTO, MultipartFile multipartFile) throws IOException {
         try {
-            storePostImage(postDTO);
+            String imagePath = "";
+
+            if (multipartFile != null && !multipartFile.isEmpty()) {
+                imagePath = s3Uploader.upload(multipartFile, POST_IMAGE_DIRECTORY);
+            }
+
+            postDTO.setImage(imagePath);
             postRepository.save(postDTO.convertToEntity());
         } catch (RuntimeException e) {
             throw new RuntimeException("Query to insert post failed", e);
@@ -67,7 +76,6 @@ public class PostServiceImpl implements PostService {
                 );
 
         PostDTO postDTO = PostDTO.convertToDTO(post);
-        loadPostImage(postDTO);
         List<CommentDTO> commentsDTO = convertToCommentDTOList(commentRepository.findAllAndDeletedAtIsNull(id));
 
         return new PostDetailDTO(postDTO, commentsDTO);
@@ -76,17 +84,25 @@ public class PostServiceImpl implements PostService {
 
 
     @Override
-    public void modify(PostDTO postDTO) throws IOException {
+    public void modify(PostDTO postDTO, MultipartFile multipartFile) throws IOException {
         Post post = postRepository.findById(postDTO.getId())
                 .orElseThrow(() ->
                         new EmptyResultDataAccessException("Post with id not found => [" + postDTO.getId() + "]", 1, new Exception())
                 );
 
-        if(!postDTO.getImage().isEmpty()) {
-            updatePostImage(postDTO, post);
-        } else {
-            postDTO.setImage(post.getImage());
+        String imagePath = "";
+
+        // 기존이미지가 있다면 삭제 필요
+        if(!post.getImage().isEmpty() && multipartFile != null && !multipartFile.isEmpty()) {
+            imagePath = s3Uploader.updateFile(multipartFile, post.getImage(), POST_IMAGE_DIRECTORY);
         }
+
+        // 기존이미지가 없고 업데이트 이미지가 있다면
+        if(post.getImage().isEmpty() && multipartFile != null && !multipartFile.isEmpty()) {
+            imagePath = s3Uploader.upload(multipartFile, POST_IMAGE_DIRECTORY);
+        }
+
+        postDTO.setImage(imagePath);
 
         try {
             postRepository.update(postDTO.convertToEntity());
@@ -133,63 +149,11 @@ public class PostServiceImpl implements PostService {
 
 
 
-
-
-    private void storePostImage(PostDTO postDTO) throws IOException {
-
-        if (!postDTO.getImage().isEmpty()) {
-            Path imageDirPath = Paths.get(POST_IMAGE_DIRECTORY);
-            // 디렉터리가 존재하지 않으면 생성
-            if (!Files.exists(imageDirPath)) {
-                Files.createDirectories(imageDirPath);
-            }
-
-            String imageName = UUID.randomUUID().toString();
-            Path imagePath = Paths.get(POST_IMAGE_DIRECTORY + imageName);
-
-            try (OutputStream outputStream = new FileOutputStream(imagePath.toFile())) {
-                FileCopyUtils.copy(postDTO.getImage().getBytes(), outputStream);
-                postDTO.setImage(imageName);
-            } catch (IOException e) {
-                throw new IOException(e);
-            }
-        }
-    }
-
-    private void loadPostImage(PostDTO postDTO) throws IOException {
-        if (!postDTO.getImage().isEmpty()) {
-            Path imagePath = Paths.get(POST_IMAGE_DIRECTORY + postDTO.getImage());
-            String image = Files.readString(imagePath, StandardCharsets.UTF_8);
-            postDTO.setImage(image);
-        }
-    }
-
-    private void updatePostImage(PostDTO postDTO, Post post) throws IOException {
-        String fileName = post.getImage();
-        if (fileName.isEmpty()) {
-            fileName = UUID.randomUUID().toString();
-        }
-
-        Path imagePath = Paths.get(POST_IMAGE_DIRECTORY + fileName);
-
-        try (OutputStream outputStream = new FileOutputStream(imagePath.toFile())) {
-            FileCopyUtils.copy(postDTO.getImage().getBytes(), outputStream);
-            postDTO.setImage(fileName);
-        } catch (IOException e) {
-            throw new IOException(e);
-        }
-    }
-
     private List<PostDTO> convertToPostDTOList(List<Post> posts) throws IOException {
         List<PostDTO> postsDTO = new ArrayList<>();
 
         for (Post post : posts) {
-            System.out.println(post.getCreatedAt());
             postsDTO.add(PostDTO.convertToDTO(post));
-        }
-
-        for (PostDTO postDTO : postsDTO) {
-            loadPostImage(postDTO);
         }
 
         return postsDTO;

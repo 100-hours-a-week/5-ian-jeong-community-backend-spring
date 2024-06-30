@@ -35,11 +35,11 @@ public class JWTFilter extends OncePerRequestFilter {
     private final RefreshTokenService refreshTokenService;
 
     private static final List<String> EXCLUDE_URLS = Arrays.asList(
-            "/login",
-            "/users/email",
-            "/users/nickname",
-            "/users",
-            "/oauth2/authorization/**"
+            "/api/v1/login",
+            "/api/v1/users/email",
+            "/api/v1/users/nickname",
+            "/api/v1/users",
+            "/api/v1/oauth2/authorization/**"
     );
 
     @Override

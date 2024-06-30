@@ -48,10 +48,10 @@ public class SecurityConfig {
                 // 요청 경로별 인가, 기존 인증로직만 해당하고 , jwt 필터는 별도로 처리
                 .authorizeHttpRequests((auth) -> auth
                             .requestMatchers(
-                                    "/users/nickname",     // 닉네임 중복검사
-                                    "/users/email",                 // 이메일 중복검사
-                                    "/users",                       // post메서드 회원가입
-                                    "/login"                        // 로그인 요청
+                                    "/api/v1/users/nickname",     // 닉네임 중복검사
+                                    "/api/v1/users/email",                 // 이메일 중복검사
+                                    "/api/v1/users",                       // post메서드 회원가입
+                                    "/api/v1/login"                        // 로그인 요청
                             ).permitAll()                           // 인증없이 요청가능
                             .anyRequest().authenticated()           // 나머지 경로 인가 필요
                 )

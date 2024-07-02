@@ -67,6 +67,15 @@ jobs:
           cp Dockerrun.aws.json deploy/Dockerrun.aws.json
           cd deploy && zip -r deploy.zip .
 
+      # 기존 버전 삭제
+      - name: Delete existing application version
+        run: |
+          aws elasticbeanstalk delete-application-version \
+            --application-name odop \
+            --version-label test-v1.0 \
+            --delete-source-bundle
+
+
       - name: Beanstalk Deploy
         uses: einaregilsson/beanstalk-deploy@v14
         with:

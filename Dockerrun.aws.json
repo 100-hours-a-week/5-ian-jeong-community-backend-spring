@@ -1,29 +1,13 @@
 {
-  "AWSEBDockerrunVersion": "2",
-  "containerDefinitions": [
+  "AWSEBDockerrunVersion": "1",
+  "Image": {
+    "Name": "891376974287.dkr.ecr.ap-northeast-2.amazonaws.com/ian:v1.0",
+    "Update": "true"
+  },
+  "Ports": [
     {
-      "name": "backend",
-      "image": "891376974287.dkr.ecr.ap-northeast-2.amazonaws.com/ian:v1.0",
-      "essential": true,
-      "memory": 512,
-      "portMappings": [
-        {
-          "hostPort": 8090,
-          "containerPort": 8080
-        }
-      ]
-    },
-    {
-      "name": "frontend",
-      "image": "891376974287.dkr.ecr.ap-northeast-2.amazonaws.com/ian:front",
-      "essential": true,
-      "memory": 512,
-      "portMappings": [
-        {
-          "hostPort": 3001,
-          "containerPort": 3000
-        }
-      ]
+      "ContainerPort": 8080,
+      "HostPort": 8090
     }
   ]
 }

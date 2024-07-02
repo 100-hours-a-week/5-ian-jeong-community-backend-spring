@@ -56,10 +56,6 @@ jobs:
 
       - name: Build, tag, and push backend Docker image to Amazon ECR
         id: build-image
-        env:
-          ECR_REGISTRY: ${{ secrets.ECR_REGISTRY }}
-          ECR_REPOSITORY_BACKEND: ian
-          IMAGE_TAG: v1.0
         run: |
           docker build -t ${{ secrets.ECR_REGISTRY }}:v1.0 .
           docker push ${{ secrets.ECR_REGISTRY }}:v1.0
@@ -76,8 +72,8 @@ jobs:
         with:
           aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          application_name: test
-          environment_name: odop
+          application_name: odop
+          environment_name: Odop-env
           version_label: test-v1.0
           region: ap-northeast-2
           deployment_package: deploy/deploy.zip
